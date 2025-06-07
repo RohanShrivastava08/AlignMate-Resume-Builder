@@ -4,39 +4,39 @@
 import type { UseFormReturn } from "react-hook-form";
 import type { GenerateResumeFormValues } from "@/lib/zod-schemas";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { ArrayFieldForm } from "./ArrayFieldForm";
 
 interface SkillsFormProps {
   form: UseFormReturn<GenerateResumeFormValues>;
 }
 
+// Default value for a new skill item in the array
+const defaultSkillValue = "";
+
 export function SkillsForm({ form }: SkillsFormProps) {
   return (
-    <FormField
+    <ArrayFieldForm
       control={form.control}
-      name="skills"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>Skills</FormLabel>
-          <FormControl>
-            <Textarea
-              placeholder="Enter skills separated by COMMA (e.g., JavaScript, React, Node.js)"
-              {...field}
-              onChange={(e) => {
-                // Convert comma-separated string to array of strings for the form state
-                const skillsArray = e.target.value.split(',').map(skill => skill.trim()).filter(skill => skill);
-                field.onChange(skillsArray);
-              }}
-              // Display skills as comma-separated string in the textarea
-              value={Array.isArray(field.value) ? field.value.join(', ') : ''}
-              rows={3}
-            />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
+      name="skills" // Name of the field array in form values
+      singularItemName="Skill"
+      defaultItemValue={defaultSkillValue} // Value to append for a new skill
+      renderItem={(index) => (
+        <FormField
+          control={form.control}
+          // Path to the specific skill string within the array
+          name={`skills.${index}`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="sr-only">Skill #{index + 1}</FormLabel>
+              <FormControl>
+                <Input placeholder="e.g., JavaScript" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       )}
     />
   );
 }
-
-    
