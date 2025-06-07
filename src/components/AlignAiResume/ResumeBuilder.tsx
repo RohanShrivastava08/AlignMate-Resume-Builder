@@ -31,25 +31,25 @@ export function ResumeBuilder() {
   const [reviewData, setReviewData] = useState<TailorResumeOutput["review"] | null>(null);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
-  // Load saved data from localStorage
+  // Load saved data from localStorage (excluding generatedResume)
   useEffect(() => {
     const savedPastedResume = localStorage.getItem("alignai_pastedResume");
     if (savedPastedResume) setPastedResume(savedPastedResume);
-    const savedGeneratedResume = localStorage.getItem("alignai_generatedResume");
-    if (savedGeneratedResume) setGeneratedResume(savedGeneratedResume);
+    // const savedGeneratedResume = localStorage.getItem("alignai_generatedResume"); // Removed
+    // if (savedGeneratedResume) setGeneratedResume(savedGeneratedResume);          // Removed
     const savedJobTitle = localStorage.getItem("alignai_jobTitle");
     if (savedJobTitle) setJobTitle(savedJobTitle);
     const savedJobDescription = localStorage.getItem("alignai_jobDescription");
     if (savedJobDescription) setJobDescription(savedJobDescription);
   }, []);
 
-  // Save data to localStorage
+  // Save data to localStorage (excluding generatedResume)
   useEffect(() => {
     localStorage.setItem("alignai_pastedResume", pastedResume);
   }, [pastedResume]);
-  useEffect(() => {
-    localStorage.setItem("alignai_generatedResume", generatedResume);
-  }, [generatedResume]);
+  // useEffect(() => {                                                        // Removed
+  //   localStorage.setItem("alignai_generatedResume", generatedResume);      // Removed
+  // }, [generatedResume]);                                                   // Removed
    useEffect(() => {
     localStorage.setItem("alignai_jobTitle", jobTitle);
   }, [jobTitle]);
@@ -240,5 +240,3 @@ export function ResumeBuilder() {
     </div>
   );
 }
-
-    
