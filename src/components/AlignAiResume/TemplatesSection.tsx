@@ -3,9 +3,9 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 
 const templates = [
-  { name: "Modern Professional", imgSrc: "https://placehold.co/300x400.png", hint: "ATS resume modern" },
-  { name: "Creative Minimalist", imgSrc: "https://placehold.co/300x400.png", hint: "ATS resume creative" },
-  { name: "Classic ATS-Friendly", imgSrc: "https://placehold.co/300x400.png", hint: "ATS resume classic" },
+  { name: "Modern Professional", imgSrc: "https://placehold.co/300x400.png", hint: "ATS modern" },
+  { name: "Creative Minimalist", imgSrc: "https://placehold.co/300x400.png", hint: "ATS creative" },
+  { name: "Classic ATS-Friendly", imgSrc: "https://placehold.co/300x400.png", hint: "ATS classic" },
 ];
 
 export function TemplatesSection() {

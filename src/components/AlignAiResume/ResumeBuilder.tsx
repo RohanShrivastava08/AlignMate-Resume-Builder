@@ -26,30 +26,20 @@ export function ResumeBuilder() {
   const [isLoadingOptimize, setIsLoadingOptimize] = useState(false);
   const [isLoadingGenerate, setIsLoadingGenerate] = useState(false); // Used by ResumeForm
   const [isLoadingTailor, setIsLoadingTailor] = useState(false);
-  const [isLoadingReview, setIsLoadingReview] = useState(false); // New state for AI Review button
+  const [isLoadingReview, setIsLoadingReview] = useState(false);
   
   const [reviewData, setReviewData] = useState<TailorResumeOutput["review"] | null>(null);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
-  // Load saved data from localStorage (excluding generatedResume)
+  // Load saved data from localStorage (excluding generatedResume and pastedResume)
   useEffect(() => {
-    const savedPastedResume = localStorage.getItem("alignai_pastedResume");
-    if (savedPastedResume) setPastedResume(savedPastedResume);
-    // const savedGeneratedResume = localStorage.getItem("alignai_generatedResume"); // Removed
-    // if (savedGeneratedResume) setGeneratedResume(savedGeneratedResume);          // Removed
     const savedJobTitle = localStorage.getItem("alignai_jobTitle");
     if (savedJobTitle) setJobTitle(savedJobTitle);
     const savedJobDescription = localStorage.getItem("alignai_jobDescription");
     if (savedJobDescription) setJobDescription(savedJobDescription);
   }, []);
 
-  // Save data to localStorage (excluding generatedResume)
-  useEffect(() => {
-    localStorage.setItem("alignai_pastedResume", pastedResume);
-  }, [pastedResume]);
-  // useEffect(() => {                                                        // Removed
-  //   localStorage.setItem("alignai_generatedResume", generatedResume);      // Removed
-  // }, [generatedResume]);                                                   // Removed
+  // Save data to localStorage (excluding generatedResume and pastedResume)
    useEffect(() => {
     localStorage.setItem("alignai_jobTitle", jobTitle);
   }, [jobTitle]);
@@ -112,7 +102,6 @@ export function ResumeBuilder() {
     setIsLoadingReview(true);
     try {
       const result = await tailorResume({ resumeText: generatedResume, jobDescription });
-      // DO NOT setGeneratedResume here, only show review
       setReviewData(result.review);
       setIsReviewModalOpen(true);
       toast({ title: "AI Review Ready!", description: "The AI analysis of your resume is available." });
