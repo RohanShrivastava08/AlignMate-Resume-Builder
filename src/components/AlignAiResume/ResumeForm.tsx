@@ -50,8 +50,11 @@ export function ResumeForm({ onResumeGenerated, setIsLoading, isLoading, onFormU
       // Ensure optional fields are correctly handled (empty arrays if not filled)
       const apiValues: GenerateResumeInput = {
         ...values,
-        volunteerExperience: values.volunteerExperience?.length ? values.volunteerExperience : undefined,
-        hobbies: values.hobbies?.length ? values.hobbies : undefined,
+        // Ensure empty arrays are passed if fields are cleared, or undefined if they should be omitted by Zod
+        volunteerExperience: values.volunteerExperience && values.volunteerExperience.length > 0 && values.volunteerExperience.some(v => v.organization)
+          ? values.volunteerExperience
+          : undefined,
+        hobbies: values.hobbies && values.hobbies.length > 0 ? values.hobbies : undefined,
       };
       const result = await generateResume(apiValues);
       onResumeGenerated(result);
@@ -104,7 +107,7 @@ export function ResumeForm({ onResumeGenerated, setIsLoading, isLoading, onFormU
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <Accordion type="multiple" defaultValue={["Personal Details"]} className="w-full">
+            <Accordion type="multiple" defaultValue={["Personal Details", "Skills", "Work Experience"]} className="w-full">
               {formSections.map((section, index) => (
                 <AccordionItem key={index} value={section.title}>
                   <AccordionTrigger className="text-lg font-semibold hover:no-underline">

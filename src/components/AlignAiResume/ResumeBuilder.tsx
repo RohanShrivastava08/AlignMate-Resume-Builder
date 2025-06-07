@@ -37,55 +37,79 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
   preview += "SKILLS\n--------------------\n";
   preview += `${data.skills?.join(", ") || ""}\n\n`;
 
-  if (data.workExperience && data.workExperience.length > 0 && data.workExperience[0].title) { // Check if first item is not empty
-    preview += "WORK EXPERIENCE\n--------------------\n";
-    data.workExperience?.forEach(exp => {
-      if (exp.title || exp.company || exp.description) { // only add if there's some content
-        preview += `Title: ${exp.title || ""}\n`;
-        preview += `Company: ${exp.company || ""}\n`;
-        preview += `Dates: ${exp.startDate || ""} - ${exp.endDate || ""}\n`;
-        preview += `Description:\n${exp.description || ""}\n\n`;
+  if (data.workExperience && data.workExperience.length > 0) {
+    let contentAdded = false;
+    let sectionText = "WORK EXPERIENCE\n--------------------\n";
+    data.workExperience.forEach(exp => {
+      if (exp.title || exp.company || exp.startDate || exp.endDate || exp.description) {
+        contentAdded = true;
+        sectionText += `Title: ${exp.title || ""}\n`;
+        sectionText += `Company: ${exp.company || ""}\n`;
+        sectionText += `Dates: ${exp.startDate || ""} - ${exp.endDate || ""}\n`;
+        sectionText += `Description:\n${exp.description || ""}\n\n`;
       }
     });
+    if (contentAdded) preview += sectionText;
+    else if (data.workExperience.some(exp => Object.values(exp).some(val => val === ""))) { // show header if array exists but all items are empty initially
+        preview += "WORK EXPERIENCE\n--------------------\n\n";
+    }
   }
 
 
-  if (data.projects && data.projects.length > 0 && data.projects[0].name) {
-    preview += "PROJECTS\n--------------------\n";
-    data.projects?.forEach(proj => {
-      if (proj.name || proj.description) {
-        preview += `Project: ${proj.name || ""}\n`;
-        preview += `Description:\n${proj.description || ""}\n`;
-        if (proj.liveLink) preview += `Live Link: ${proj.liveLink}\n`;
-        if (proj.githubLink) preview += `GitHub Link: ${proj.githubLink}\n`;
-        preview += "\n";
+  if (data.projects && data.projects.length > 0) {
+    let contentAdded = false;
+    let sectionText = "PROJECTS\n--------------------\n";
+    data.projects.forEach(proj => {
+      if (proj.name || proj.description || proj.liveLink || proj.githubLink) {
+        contentAdded = true;
+        sectionText += `Project: ${proj.name || ""}\n`;
+        sectionText += `Description:\n${proj.description || ""}\n`;
+        if (proj.liveLink) sectionText += `Live Link: ${proj.liveLink}\n`;
+        if (proj.githubLink) sectionText += `GitHub Link: ${proj.githubLink}\n`;
+        sectionText += "\n";
       }
     });
+    if (contentAdded) preview += sectionText;
+    else if (data.projects.some(proj => Object.values(proj).some(val => val === ""))) {
+         preview += "PROJECTS\n--------------------\n\n";
+    }
   }
 
 
-  if (data.education && data.education.length > 0 && data.education[0].institution) {
-    preview += "EDUCATION\n--------------------\n";
-    data.education?.forEach(edu => {
-      if (edu.institution || edu.degree) {
-        preview += `Institution: ${edu.institution || ""}\n`;
-        preview += `Degree: ${edu.degree || ""}\n`;
-        preview += `Dates: ${edu.startDate || ""} - ${edu.endDate || ""}\n\n`;
+  if (data.education && data.education.length > 0) {
+    let contentAdded = false;
+    let sectionText = "EDUCATION\n--------------------\n";
+    data.education.forEach(edu => {
+      if (edu.institution || edu.degree || edu.startDate || edu.endDate) {
+        contentAdded = true;
+        sectionText += `Institution: ${edu.institution || ""}\n`;
+        sectionText += `Degree: ${edu.degree || ""}\n`;
+        sectionText += `Dates: ${edu.startDate || ""} - ${edu.endDate || ""}\n\n`;
       }
     });
+    if (contentAdded) preview += sectionText;
+     else if (data.education.some(edu => Object.values(edu).some(val => val === ""))) {
+        preview += "EDUCATION\n--------------------\n\n";
+    }
   }
 
 
-  if (data.volunteerExperience && data.volunteerExperience.length > 0 && data.volunteerExperience[0].organization) {
-    preview += "VOLUNTEER EXPERIENCE\n--------------------\n";
+  if (data.volunteerExperience && data.volunteerExperience.length > 0) {
+    let contentAdded = false;
+    let sectionText = "VOLUNTEER EXPERIENCE\n--------------------\n";
     data.volunteerExperience.forEach(vol => {
-       if (vol.organization || vol.role || vol.description) {
-        preview += `Organization: ${vol.organization || ""}\n`;
-        preview += `Role: ${vol.role || ""}\n`;
-        preview += `Dates: ${vol.startDate || ""} - ${vol.endDate || ""}\n`;
-        preview += `Description:\n${vol.description || ""}\n\n`;
+       if (vol.organization || vol.role || vol.startDate || vol.endDate || vol.description) {
+        contentAdded = true;
+        sectionText += `Organization: ${vol.organization || ""}\n`;
+        sectionText += `Role: ${vol.role || ""}\n`;
+        sectionText += `Dates: ${vol.startDate || ""} - ${vol.endDate || ""}\n`;
+        sectionText += `Description:\n${vol.description || ""}\n\n`;
       }
     });
+    if (contentAdded) preview += sectionText;
+    else if (data.volunteerExperience.some(vol => Object.values(vol).some(val => val === ""))) {
+        preview += "VOLUNTEER EXPERIENCE\n--------------------\n\n";
+    }
   }
 
   if (data.hobbies && data.hobbies.length > 0) {
@@ -118,9 +142,8 @@ export function ResumeBuilder() {
     if (savedJobTitle) setJobTitle(savedJobTitle);
     const savedJobDescription = localStorage.getItem("alignai_jobDescription");
     if (savedJobDescription) setJobDescription(savedJobDescription);
-    // Clear pastedResume on mount to ensure it's blank on refresh
+    // Clear pastedResume and generatedResume on mount to ensure they are blank on refresh
     setPastedResume("");
-    // Clear generatedResume on mount
     setGeneratedResume(""); 
   }, []);
 
@@ -228,22 +251,19 @@ export function ResumeBuilder() {
     toast({ title: "Downloaded!", description: "Resume downloaded as AlignAI_Resume.txt." });
   };
   
-  // When switching input modes, if switching to "form", initialize preview with current form data
-  // if switching away from "form", clear the generated resume if it was form-driven to avoid stale preview
    useEffect(() => {
     if (inputMode === 'paste') {
-       // If user typed in form, then switched to paste, and pastedResume is empty,
-       // it's good to clear the generatedResume to avoid showing stale form preview
       if (pastedResume === "") {
         setGeneratedResume("");
       } else {
-        // If there is pasted resume, set it as the preview
         setGeneratedResume(pastedResume); 
       }
+    } else if (inputMode === 'form') {
+        // When switching to form mode, ResumeForm's onFormUpdate will be called
+        // with current (possibly initial) form data, which populates the preview.
+        // No explicit action needed here for generatedResume, as handleFormUpdate covers it.
     }
-    // If switching to form, the ResumeForm's useEffect will trigger handleFormUpdate
-    // and set the preview based on initial form data.
-  }, [inputMode, pastedResume]);
+  }, [inputMode, pastedResume, handleFormUpdate]);
 
 
   return (
@@ -273,7 +293,6 @@ export function ResumeBuilder() {
                   value={pastedResume}
                   onChange={(e) => {
                     setPastedResume(e.target.value);
-                    // Update preview if in paste mode
                     if (inputMode === 'paste') {
                         setGeneratedResume(e.target.value);
                     }
@@ -307,7 +326,7 @@ export function ResumeBuilder() {
               rows={8}
               className="min-h-[200px]"
             />
-            <Button onClick={handleTailorResume} className="w-full" disabled={isLoadingTailor || !generatedResume.trim()}>
+            <Button onClick={handleTailorResume} className="w-full" disabled={isLoadingTailor || !generatedResume.trim() || !jobDescription.trim()}>
               {isLoadingTailor ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               Tailor Resume with AI
             </Button>
