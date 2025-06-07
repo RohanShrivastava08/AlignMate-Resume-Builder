@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Download, Copy, Loader2, FileSearch2 } from "lucide-react";
 import type { GenerateResumeFormValues } from "@/lib/zod-schemas";
 
+
 // Helper function to generate a modern plain text preview from form data
 const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string => {
   if (!data) return "";
@@ -25,8 +26,7 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
   if (data.jobProfile && data.jobProfile.trim() !== "") {
     preview += `${data.jobProfile.trim().toUpperCase()}\n\n`;
   }
-
-  // Personal Details
+  
   let personalDetailsContent = "";
   if (data.personalDetails) {
     if (data.personalDetails.name && data.personalDetails.name.trim() !== "") {
@@ -37,6 +37,7 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
       data.personalDetails.phone ? data.personalDetails.phone.trim() : "",
       data.personalDetails.location ? data.personalDetails.location.trim() : "",
     ].filter(val => val && val.trim() !== "");
+
     if (contactPartsInternal.length > 0) {
       personalDetailsContent += `${contactPartsInternal.join(" | ")}\n`;
     }
@@ -55,6 +56,7 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
       personalDetailsContent += `${linkParts.join(" | ")}\n`;
     }
   }
+
   if (personalDetailsContent.trim() !== "") {
     preview += personalDetailsContent + "\n"; 
   }
@@ -68,7 +70,7 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
   }
 
   // Work Experience
-  const hasWorkExperience = data.workExperience && data.workExperience.length > 0 && data.workExperience.some(exp => Object.values(exp).some(val => typeof val === 'string' && val.trim() !== "" || (Array.isArray(val) && val.length > 0)));
+  const hasWorkExperience = data.workExperience && data.workExperience.length > 0 && data.workExperience.some(exp => Object.values(exp).some(val => typeof val === 'string' && val.trim() !== "" ));
   if (hasWorkExperience) {
     preview += "WORK EXPERIENCE\n";
     preview += "--------------------\n";
@@ -99,7 +101,7 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
   }
 
   // Projects
-  const hasProjects = data.projects && data.projects.length > 0 && data.projects.some(proj => Object.values(proj).some(val => typeof val === 'string' && val.trim() !== "" || (Array.isArray(val) && val.length > 0)));
+  const hasProjects = data.projects && data.projects.length > 0 && data.projects.some(proj => Object.values(proj).some(val => typeof val === 'string' && val.trim() !== "" ));
   if (hasProjects) {
     preview += "PROJECTS\n";
     preview += "--------------------\n";
@@ -130,7 +132,7 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
   }
 
   // Education
-  const hasEducation = data.education && data.education.length > 0 && data.education.some(edu => Object.values(edu).some(val => typeof val === 'string' && val.trim() !== "" || (Array.isArray(val) && val.length > 0)));
+  const hasEducation = data.education && data.education.length > 0 && data.education.some(edu => Object.values(edu).some(val => typeof val === 'string' && val.trim() !== "" ));
   if (hasEducation) {
     preview += "EDUCATION\n";
     preview += "--------------------\n";
@@ -155,7 +157,7 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
   }
   
   // Volunteer Experience
-  const hasVolunteerExperience = data.volunteerExperience && data.volunteerExperience.length > 0 && data.volunteerExperience.some(vol => Object.values(vol).some(val => typeof val === 'string' && val && val.trim() !== "" || (Array.isArray(val) && val.length > 0)));
+  const hasVolunteerExperience = data.volunteerExperience && data.volunteerExperience.length > 0 && data.volunteerExperience.some(vol => Object.values(vol).some(val => typeof val === 'string' && val && val.trim() !== ""));
   if (hasVolunteerExperience) {
     preview += "VOLUNTEER EXPERIENCE\n";
     preview += "--------------------\n";
@@ -212,14 +214,17 @@ export function ResumeBuilder() {
   const [reviewData, setReviewData] = useState<TailorResumeOutput["review"] | null>(null);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
+  const anyLoading = isLoadingOptimize || isLoadingGenerate || isLoadingTailor || isLoadingReview;
+
   useEffect(() => {
+    // Clear pasted resume and generated resume on initial load/refresh
+    setPastedResume(""); 
+    setGeneratedResume(""); 
+
     const savedJobTitle = localStorage.getItem("alignai_jobTitle");
     if (savedJobTitle) setJobTitle(savedJobTitle);
     const savedJobDescription = localStorage.getItem("alignai_jobDescription");
     if (savedJobDescription) setJobDescription(savedJobDescription);
-    
-    setPastedResume(""); 
-    setGeneratedResume(""); 
   }, []);
 
 
@@ -354,7 +359,17 @@ export function ResumeBuilder() {
             const newMode = value as "paste" | "form";
             setInputMode(newMode);
             if (newMode === 'form') {
-                 // Let ResumeForm's onFormUpdate handle the preview based on current form state
+                // Trigger form update to refresh preview based on current form state
+                const currentFormData = (document.querySelector('form') as HTMLFormElement) 
+                                      ? new FormData(document.querySelector('form') as HTMLFormElement) 
+                                      : null;
+                if (currentFormData) {
+                    // This is a simplified way to get current form values;
+                    // Ideally, ResumeForm would expose its current values or a re-trigger mechanism
+                    // For now, we rely on onFormUpdate being called by ResumeForm on its own changes.
+                } else {
+                   setGeneratedResume(generatePlainTextPreview(null)); // Or use initialResumeData if preferred
+                }
             } else { 
                 if (pastedResume.trim() === "") {
                     setGeneratedResume("");
@@ -428,7 +443,25 @@ export function ResumeBuilder() {
       </div>
 
       <div className="sticky top-20"> 
-        <ResumePreview resumeText={generatedResume} />
+        <div className="relative">
+          <ResumePreview resumeText={generatedResume} />
+          {anyLoading && (
+            <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center rounded-lg z-10">
+              <div className="flex flex-col items-center text-center p-4">
+                <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+                <p className="text-lg font-semibold text-foreground">
+                  {isLoadingGenerate && "Generating your resume..."}
+                  {isLoadingOptimize && "Optimizing your resume..."}
+                  {isLoadingTailor && "Tailoring your resume..."}
+                  {isLoadingReview && "Analyzing your resume..."}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  AI is working its magic, please wait a moment.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
         <div className="mt-4 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
           <Button onClick={handleCopyResume} variant="outline" className="flex-1" disabled={!generatedResume.trim()}>
             <Copy className="mr-2 h-4 w-4" /> Copy

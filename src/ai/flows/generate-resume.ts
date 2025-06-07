@@ -22,7 +22,7 @@ const PersonalDetailsSchema = z.object({
   location: z.string().describe('The location of the person.'),
 });
 
-const JobProfileSchema = z.string().describe('The job profile or title of the person.');
+const JobProfileSchema = z.string().optional().describe('The job profile or title of the person.');
 
 const SkillsSchema = z.array(z.string()).describe('A list of skills.');
 
@@ -56,17 +56,17 @@ const VolunteerExperienceSchema = z.object({
   description: z.string().describe('A description of the volunteer responsibilities and achievements.'),
 });
 
-const HobbiesSchema = z.array(z.string()).describe('A list of hobbies.');
+const HobbiesSchema = z.array(z.string()).optional().describe('A list of hobbies.');
 
 const GenerateResumeInputSchema = z.object({
   personalDetails: PersonalDetailsSchema.describe('Personal details of the person.'),
-  jobProfile: JobProfileSchema.optional().describe('The job profile or title of the person.'),
+  jobProfile: JobProfileSchema,
   skills: SkillsSchema.describe('A list of skills.'),
   workExperience: z.array(WorkExperienceSchema).describe('A list of work experiences.'),
   projects: z.array(ProjectSchema).describe('A list of projects.'),
   education: z.array(EducationSchema).describe('A list of education entries.'),
   volunteerExperience: z.array(VolunteerExperienceSchema).optional().describe('A list of volunteer experiences.'),
-  hobbies: HobbiesSchema.optional().describe('A list of hobbies.'),
+  hobbies: HobbiesSchema,
 });
 
 export type GenerateResumeInput = z.infer<typeof GenerateResumeInputSchema>;
@@ -87,17 +87,23 @@ const prompt = ai.definePrompt({
   name: 'generateResumePrompt',
   input: {schema: GenerateResumeInputSchema},
   output: {schema: NullableGenerateResumeOutputSchema},
-  prompt: `You are an expert resume writer. Transform the following structured information into a professional, grammatically correct, ATS-optimized resume in PLAIN TEXT format.
-  Do NOT output JSON. The resume should be ready to be copied and pasted into a text editor (like Notepad) or a Word document.
+  prompt: `You are an expert resume writer and career coach. Your task is to transform the following structured information into a professional, grammatically correct, ATS-optimized, and impactful resume in PLAIN TEXT format.
+  Do NOT output JSON. The resume should be ready to be copied and pasted into a text editor or a Word document.
+
+  Key Objectives:
+  - ATS Optimization: Ensure the resume uses clear, standard formatting (headings, bullet points) that Applicant Tracking Systems can easily parse.
+  - Keyword Enhancement: While generating, subtly incorporate generally relevant keywords for professional roles.
+  - Impactful Language: Rewrite user-provided descriptions (especially for work experience and projects) to use strong action verbs, quantify achievements where possible, and highlight skills. Make it concise and compelling.
+  - Professional Tone: Maintain a formal and professional tone throughout.
 
   Output Format Guidelines:
   - Start with the Job Profile/Resume Heading if provided, centered or prominently displayed.
-  - Then list Personal Details: Name (prominently), followed by Email, Phone, and Location on one line. On the next line, list LinkedIn, GitHub, and Portfolio URLs if provided, clearly labeled.
+  - Then list Personal Details: Name (prominently), followed by Email, Phone, and Location on one line. On the next line, list LinkedIn, GitHub, and Portfolio URLs if provided, clearly labeled (e.g., "LinkedIn: [url]").
   - Follow with a 'SKILLS' section, listing skills clearly (e.g., comma-separated or bulleted list under a 'SKILLS' heading).
-  - Then, 'WORK EXPERIENCE' section. For each experience: Title and Company on one line, Dates (Start - End) on the next, and a Description (use bullet points starting with '-' for responsibilities/achievements).
-  - Then, 'PROJECTS' section. For each project: Name, Description (use bullet points), Live Link (if provided), GitHub Link (if provided).
+  - Then, 'WORK EXPERIENCE' section. For each experience: Title and Company on one line, Dates (Start - End) on the next. For the Description, transform it into concise, achievement-oriented bullet points (starting with '-').
+  - Then, 'PROJECTS' section. For each project: Name. Transform the Description into bullet points highlighting skills used and outcomes. List Live Link and GitHub Link if provided.
   - Then, 'EDUCATION' section. For each entry: Institution and Degree on one line, Dates (Start - End) on the next.
-  - If Volunteer Experience is provided, include a 'VOLUNTEER EXPERIENCE' section similar to Work Experience.
+  - If Volunteer Experience is provided, include a 'VOLUNTEER EXPERIENCE' section, formatted similarly to Work Experience.
   - If Hobbies are provided, include a 'HOBBIES' section, listing them clearly.
   - Use clear uppercase headings for each section (e.g., "PERSONAL DETAILS", "SKILLS", "WORK EXPERIENCE", "PROJECTS", "EDUCATION", "VOLUNTEER EXPERIENCE", "HOBBIES").
   - Use consistent formatting and ample line breaks for readability.
