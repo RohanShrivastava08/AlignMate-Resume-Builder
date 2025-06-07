@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -12,7 +13,7 @@ import { ResumeForm } from "./ResumeForm";
 import { ResumePreview } from "./ResumePreview";
 import { ResumeReviewModal } from "./ResumeReviewModal";
 import { useToast } from "@/hooks/use-toast";
-import { Download, Copy, Loader2 } from "lucide-react";
+import { Download, Copy, Loader2, FileSearch2 } from "lucide-react";
 
 export function ResumeBuilder() {
   const { toast } = useToast();
@@ -25,6 +26,7 @@ export function ResumeBuilder() {
   const [isLoadingOptimize, setIsLoadingOptimize] = useState(false);
   const [isLoadingGenerate, setIsLoadingGenerate] = useState(false); // Used by ResumeForm
   const [isLoadingTailor, setIsLoadingTailor] = useState(false);
+  const [isLoadingReview, setIsLoadingReview] = useState(false); // New state for AI Review button
   
   const [reviewData, setReviewData] = useState<TailorResumeOutput["review"] | null>(null);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
@@ -95,6 +97,30 @@ export function ResumeBuilder() {
       toast({ title: "Error", description: "Failed to tailor resume. Please try again.", variant: "destructive" });
     } finally {
       setIsLoadingTailor(false);
+    }
+  };
+
+  const handleGetReview = async () => {
+    if (!generatedResume.trim()) {
+      toast({ title: "Resume Required", description: "Please generate or optimize a resume first.", variant: "destructive" });
+      return;
+    }
+    if (!jobDescription.trim()) {
+      toast({ title: "Job Description Required", description: "Please enter the job description in the section above to get a review.", variant: "destructive" });
+      return;
+    }
+    setIsLoadingReview(true);
+    try {
+      const result = await tailorResume({ resumeText: generatedResume, jobDescription });
+      // DO NOT setGeneratedResume here, only show review
+      setReviewData(result.review);
+      setIsReviewModalOpen(true);
+      toast({ title: "AI Review Ready!", description: "The AI analysis of your resume is available." });
+    } catch (error) {
+      console.error("Error getting resume review:", error);
+      toast({ title: "Error", description: "Failed to get resume review. Please try again.", variant: "destructive" });
+    } finally {
+      setIsLoadingReview(false);
     }
   };
 
@@ -187,12 +213,21 @@ export function ResumeBuilder() {
 
       <div className="sticky top-20"> {/* Make preview sticky */}
         <ResumePreview resumeText={generatedResume} />
-        <div className="mt-4 flex space-x-2">
+        <div className="mt-4 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
           <Button onClick={handleCopyResume} variant="outline" className="flex-1" disabled={!generatedResume.trim()}>
             <Copy className="mr-2 h-4 w-4" /> Copy
           </Button>
           <Button onClick={handleDownloadResume} variant="outline" className="flex-1" disabled={!generatedResume.trim()}>
             <Download className="mr-2 h-4 w-4" /> Download .txt
+          </Button>
+          <Button 
+            onClick={handleGetReview} 
+            variant="outline" 
+            className="flex-1" 
+            disabled={isLoadingReview || !generatedResume.trim() || !jobDescription.trim()}
+          >
+            {isLoadingReview ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileSearch2 className="mr-2 h-4 w-4" />}
+            Get AI Review
           </Button>
         </div>
       </div>
@@ -205,3 +240,5 @@ export function ResumeBuilder() {
     </div>
   );
 }
+
+    
