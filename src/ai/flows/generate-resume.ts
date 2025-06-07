@@ -1,3 +1,4 @@
+
 // src/ai/flows/generate-resume.ts
 'use server';
 /**
@@ -67,9 +68,13 @@ const GenerateResumeInputSchema = z.object({
 
 export type GenerateResumeInput = z.infer<typeof GenerateResumeInputSchema>;
 
+// This schema is for the flow's public contract (must be a string)
 const GenerateResumeOutputSchema = z.string().describe('The generated resume in plain text format.');
-
 export type GenerateResumeOutput = z.infer<typeof GenerateResumeOutputSchema>;
+
+// This schema is for the prompt's internal handling, allowing null
+const NullableGenerateResumeOutputSchema = z.string().nullable().describe('The generated resume in plain text format, possibly null.');
+
 
 export async function generateResume(input: GenerateResumeInput): Promise<GenerateResumeOutput> {
   return generateResumeFlow(input);
@@ -78,8 +83,8 @@ export async function generateResume(input: GenerateResumeInput): Promise<Genera
 const prompt = ai.definePrompt({
   name: 'generateResumePrompt',
   input: {schema: GenerateResumeInputSchema},
-  output: {schema: GenerateResumeOutputSchema},
-  prompt: `You are an expert resume writer. You will generate a professional, grammatically correct, ATS-optimized resume in plain text format from the provided information.
+  output: {schema: NullableGenerateResumeOutputSchema}, // Use nullable schema for prompt output
+  prompt: `You are an expert resume writer. You will generate a professional, grammatically correct, ATS-optimized resume in plain text format from the provided information. If you cannot generate a resume from the input, output nothing.
 
   Personal Details:
   Name: {{{personalDetails.name}}}
@@ -145,16 +150,15 @@ const generateResumeFlow = ai.defineFlow(
   {
     name: 'generateResumeFlow',
     inputSchema: GenerateResumeInputSchema,
-    outputSchema: GenerateResumeOutputSchema,
+    outputSchema: GenerateResumeOutputSchema, // Flow must return a string
   },
   async input => {
-    const response = await prompt(input);
+    const response = await prompt(input); // response.text can be string | null
     const textOutput = response.text;
     if (textOutput === null || textOutput === undefined) {
       console.warn('generateResumePrompt returned null or undefined text. Returning empty string.');
-      return ""; 
+      return ""; // Ensure flow returns a string
     }
-    return textOutput;
+    return textOutput; // Returns a string
   }
 );
-
