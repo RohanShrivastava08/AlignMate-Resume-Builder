@@ -37,34 +37,39 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
     if (contactParts.length > 0) {
       preview += `${contactParts.join(" | ")}\n`;
     }
+    
+    const linkParts = [];
     if (data.personalDetails.linkedin) {
-      preview += `${data.personalDetails.linkedin}\n`;
+      linkParts.push(`🌐 LinkedIn: ${data.personalDetails.linkedin}`);
     }
     if (data.personalDetails.github) {
-      preview += `${data.personalDetails.github}\n`;
+      linkParts.push(`🐙 GitHub: ${data.personalDetails.github}`);
+    }
+    if (data.personalDetails.portfolio) {
+      linkParts.push(`💼 Portfolio: ${data.personalDetails.portfolio}`);
+    }
+    if (linkParts.length > 0) {
+      preview += `${linkParts.join(" | ")}\n`;
     }
     preview += "\n";
   }
 
-  if (data.skills && data.skills.length > 0) {
+  if (data.skills && data.skills.length > 0 && data.skills.some(skill => skill.trim() !== "")) {
     preview += "SKILLS\n";
     preview += "--------------------\n";
-    preview += `${data.skills.join(", ")}\n\n`;
+    preview += `${data.skills.filter(skill => skill.trim() !== "").join(", ")}\n\n`;
   }
 
-
-  if (data.workExperience && data.workExperience.length > 0 && data.workExperience.some(exp => Object.values(exp).some(val => !!val))) {
+  if (data.workExperience && data.workExperience.length > 0 && data.workExperience.some(exp => Object.values(exp).some(val => !!val && String(val).trim() !== ""))) {
     preview += "WORK EXPERIENCE\n";
     preview += "--------------------\n";
     data.workExperience.forEach(exp => {
-      if (Object.values(exp).some(val => !!val)) {
-        if (exp.title && exp.company) {
-          preview += `${exp.title.toUpperCase()} at ${exp.company}\n`;
-        } else if (exp.title) {
-          preview += `${exp.title.toUpperCase()}\n`;
-        } else if (exp.company) {
-          preview += `${exp.company}\n`;
-        }
+      if (Object.values(exp).some(val => !!val && String(val).trim() !== "")) {
+        let expHeader = [];
+        if (exp.title) expHeader.push(exp.title.toUpperCase());
+        if (exp.company) expHeader.push(`at ${exp.company}`);
+        if (expHeader.length > 0) preview += `${expHeader.join(" ")}\n`;
+        
         if (exp.startDate || exp.endDate) {
           preview += `${exp.startDate || ""} - ${exp.endDate || ""}\n`;
         }
@@ -78,16 +83,17 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
     });
   }
 
-
-  if (data.projects && data.projects.length > 0 && data.projects.some(proj => Object.values(proj).some(val => !!val))) {
+  if (data.projects && data.projects.length > 0 && data.projects.some(proj => Object.values(proj).some(val => !!val && String(val).trim() !== ""))) {
     preview += "PROJECTS\n";
     preview += "--------------------\n";
     data.projects.forEach(proj => {
-       if (Object.values(proj).some(val => !!val)) {
+       if (Object.values(proj).some(val => !!val && String(val).trim() !== "")) {
         if (proj.name) {
           preview += `${proj.name.toUpperCase()}\n`;
         }
-        const links = [proj.liveLink, proj.githubLink].filter(Boolean);
+        const links = [];
+        if (proj.liveLink) links.push(`Live: ${proj.liveLink}`);
+        if (proj.githubLink) links.push(`GitHub: ${proj.githubLink}`);
         if (links.length > 0) {
           preview += `Links: ${links.join(" | ")}\n`;
         }
@@ -101,19 +107,16 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
     });
   }
 
-
-  if (data.education && data.education.length > 0 && data.education.some(edu => Object.values(edu).some(val => !!val))) {
+  if (data.education && data.education.length > 0 && data.education.some(edu => Object.values(edu).some(val => !!val && String(val).trim() !== ""))) {
     preview += "EDUCATION\n";
     preview += "--------------------\n";
     data.education.forEach(edu => {
-      if (Object.values(edu).some(val => !!val)) {
-        if (edu.degree && edu.institution) {
-          preview += `${edu.degree}, ${edu.institution}\n`;
-        } else if (edu.degree) {
-          preview += `${edu.degree}\n`;
-        } else if (edu.institution) {
-          preview += `${edu.institution}\n`;
-        }
+      if (Object.values(edu).some(val => !!val && String(val).trim() !== "")) {
+        let eduHeader = [];
+        if (edu.degree) eduHeader.push(edu.degree);
+        if (edu.institution) eduHeader.push(edu.institution);
+        if (eduHeader.length > 0) preview += `${eduHeader.join(", ")}\n`;
+
         if (edu.startDate || edu.endDate) {
           preview += `${edu.startDate || ""} - ${edu.endDate || ""}\n`;
         }
@@ -122,18 +125,16 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
     });
   }
 
-  if (data.volunteerExperience && data.volunteerExperience.length > 0 && data.volunteerExperience.some(vol => Object.values(vol).some(val => !!val))) {
+  if (data.volunteerExperience && data.volunteerExperience.length > 0 && data.volunteerExperience.some(vol => Object.values(vol).some(val => !!val && String(val).trim() !== ""))) {
     preview += "VOLUNTEER EXPERIENCE\n";
     preview += "--------------------\n";
     data.volunteerExperience.forEach(vol => {
-      if (Object.values(vol).some(val => !!val)) {
-        if (vol.role && vol.organization) {
-          preview += `${vol.role.toUpperCase()} at ${vol.organization}\n`;
-        } else if (vol.role) {
-          preview += `${vol.role.toUpperCase()}\n`;
-        } else if (vol.organization) {
-          preview += `${vol.organization}\n`;
-        }
+      if (Object.values(vol).some(val => !!val && String(val).trim() !== "")) {
+        let volHeader = [];
+        if (vol.role) volHeader.push(vol.role.toUpperCase());
+        if (vol.organization) volHeader.push(`at ${vol.organization}`);
+        if (volHeader.length > 0) preview += `${volHeader.join(" ")}\n`;
+        
         if (vol.startDate || vol.endDate) {
           preview += `${vol.startDate || ""} - ${vol.endDate || ""}\n`;
         }
@@ -147,10 +148,10 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
     });
   }
 
-  if (data.hobbies && data.hobbies.length > 0) {
+  if (data.hobbies && data.hobbies.length > 0 && data.hobbies.some(hobby => hobby.trim() !== "")) {
     preview += "HOBBIES\n";
     preview += "--------------------\n";
-    preview += `${data.hobbies.join(", ")}\n\n`;
+    preview += `${data.hobbies.filter(hobby => hobby.trim() !== "").join(", ")}\n\n`;
   }
 
   return preview.trim();
@@ -179,8 +180,8 @@ export function ResumeBuilder() {
     const savedJobDescription = localStorage.getItem("alignai_jobDescription");
     if (savedJobDescription) setJobDescription(savedJobDescription);
     
-    setPastedResume(""); // Clear pasted resume on mount
-    setGeneratedResume(""); // Clear generated/previewed resume on mount
+    setPastedResume(""); 
+    setGeneratedResume(""); 
   }, []);
 
   useEffect(() => {
@@ -290,12 +291,11 @@ export function ResumeBuilder() {
    useEffect(() => {
     if (inputMode === 'paste') {
       if (pastedResume === "") {
-        setGeneratedResume(""); // Clear preview if pasted resume is cleared
+        setGeneratedResume(""); 
       } else {
-        setGeneratedResume(pastedResume); // Show pasted resume in preview
+        setGeneratedResume(pastedResume); 
       }
     }
-    // For 'form' mode, handleFormUpdate takes care of updating generatedResume.
   }, [inputMode, pastedResume, handleFormUpdate]);
 
 
@@ -312,7 +312,7 @@ export function ResumeBuilder() {
               onResumeGenerated={setGeneratedResume} 
               setIsLoading={setIsLoadingGenerate}
               isLoading={isLoadingGenerate}
-              onFormUpdate={handleFormUpdate} // This enables live preview
+              onFormUpdate={handleFormUpdate} 
             />
           </TabsContent>
           <TabsContent value="paste" className="mt-6">
@@ -326,7 +326,7 @@ export function ResumeBuilder() {
                   value={pastedResume}
                   onChange={(e) => {
                     setPastedResume(e.target.value);
-                    if (inputMode === 'paste') { // Update preview if in paste mode
+                    if (inputMode === 'paste') { 
                         setGeneratedResume(e.target.value);
                     }
                   }}
@@ -367,7 +367,7 @@ export function ResumeBuilder() {
         </Card>
       </div>
 
-      <div className="sticky top-20"> {/* Make preview sticky */}
+      <div className="sticky top-20"> 
         <ResumePreview resumeText={generatedResume} />
         <div className="mt-4 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
           <Button onClick={handleCopyResume} variant="outline" className="flex-1" disabled={!generatedResume.trim()}>
@@ -396,5 +396,3 @@ export function ResumeBuilder() {
     </div>
   );
 }
-
-    

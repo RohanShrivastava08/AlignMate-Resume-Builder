@@ -7,6 +7,7 @@ export const PersonalDetailsSchema = z.object({
   phone: z.string().min(1, "Phone number is required."),
   linkedin: z.string().url("Invalid URL for LinkedIn profile.").optional().or(z.literal('')),
   github: z.string().url("Invalid URL for GitHub profile.").optional().or(z.literal('')),
+  portfolio: z.string().url("Invalid URL for Portfolio link.").optional().or(z.literal('')),
   location: z.string().min(1, "Location is required."),
 });
 
@@ -66,10 +67,11 @@ export const initialResumeData: GenerateResumeFormValues = {
     phone: "",
     linkedin: "",
     github: "",
+    portfolio: "",
     location: "",
   },
   jobProfile: "",
-  skills: [],
+  skills: [""], // Start with one empty skill field
   workExperience: [
     { title: "", company: "", startDate: "", endDate: "", description: "" },
   ],
@@ -78,5 +80,5 @@ export const initialResumeData: GenerateResumeFormValues = {
     { institution: "", degree: "", startDate: "", endDate: "" },
   ],
   volunteerExperience: [],
-  hobbies: [],
+  hobbies: [], // Start with hobbies as an empty array, user can add if needed
 };

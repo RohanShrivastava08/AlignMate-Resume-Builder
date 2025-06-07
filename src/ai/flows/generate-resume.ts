@@ -18,6 +18,7 @@ const PersonalDetailsSchema = z.object({
   phone: z.string().describe('The phone number of the person.'),
   linkedin: z.string().optional().describe('The LinkedIn profile URL of the person.'),
   github: z.string().optional().describe('The GitHub profile URL of the person.'),
+  portfolio: z.string().optional().describe('The portfolio URL of the person.'),
   location: z.string().describe('The location of the person.'),
 });
 
@@ -90,15 +91,15 @@ const prompt = ai.definePrompt({
   Do NOT output JSON. The resume should be ready to be copied and pasted into a text editor (like Notepad) or a Word document.
 
   Output Format Guidelines:
-  - Start with the Job Profile/Resume Heading if provided.
-  - Then list Personal Details (Name, Email, Phone, Location, LinkedIn, GitHub).
-  - Follow with a 'Skills' section, listing skills clearly (e.g., comma-separated or bulleted list under a 'Skills' heading).
-  - Then, 'Work Experience' section. For each experience: Title, Company, Dates (Start - End), and a Description (use bullet points for responsibilities/achievements).
-  - Then, 'Projects' section. For each project: Name, Description (use bullet points), Live Link (if provided), GitHub Link (if provided).
-  - Then, 'Education' section. For each entry: Institution, Degree, Dates (Start - End).
-  - If Volunteer Experience is provided, include an 'Volunteer Experience' section similar to Work Experience.
-  - If Hobbies are provided, include a 'Hobbies' section, listing them clearly.
-  - Use clear headings for each section (e.g., "PERSONAL DETAILS", "SKILLS", "WORK EXPERIENCE", "PROJECTS", "EDUCATION", "VOLUNTEER EXPERIENCE", "HOBBIES").
+  - Start with the Job Profile/Resume Heading if provided, centered or prominently displayed.
+  - Then list Personal Details: Name (prominently), followed by Email, Phone, and Location on one line. On the next line, list LinkedIn, GitHub, and Portfolio URLs if provided, clearly labeled.
+  - Follow with a 'SKILLS' section, listing skills clearly (e.g., comma-separated or bulleted list under a 'SKILLS' heading).
+  - Then, 'WORK EXPERIENCE' section. For each experience: Title and Company on one line, Dates (Start - End) on the next, and a Description (use bullet points starting with '-' for responsibilities/achievements).
+  - Then, 'PROJECTS' section. For each project: Name, Description (use bullet points), Live Link (if provided), GitHub Link (if provided).
+  - Then, 'EDUCATION' section. For each entry: Institution and Degree on one line, Dates (Start - End) on the next.
+  - If Volunteer Experience is provided, include a 'VOLUNTEER EXPERIENCE' section similar to Work Experience.
+  - If Hobbies are provided, include a 'HOBBIES' section, listing them clearly.
+  - Use clear uppercase headings for each section (e.g., "PERSONAL DETAILS", "SKILLS", "WORK EXPERIENCE", "PROJECTS", "EDUCATION", "VOLUNTEER EXPERIENCE", "HOBBIES").
   - Use consistent formatting and ample line breaks for readability.
   - If you cannot generate a meaningful resume from the input, output nothing.
 
@@ -112,11 +113,8 @@ const prompt = ai.definePrompt({
   PERSONAL DETAILS
   --------------------
   Name: {{{personalDetails.name}}}
-  Email: {{{personalDetails.email}}}
-  Phone: {{{personalDetails.phone}}}
-  Location: {{{personalDetails.location}}}
-  {{#if personalDetails.linkedin}}LinkedIn: {{{personalDetails.linkedin}}}{{/if}}
-  {{#if personalDetails.github}}GitHub: {{{personalDetails.github}}}{{/if}}
+  Email: {{{personalDetails.email}}} | Phone: {{{personalDetails.phone}}} | Location: {{{personalDetails.location}}}
+  {{#if personalDetails.linkedin}}LinkedIn: {{{personalDetails.linkedin}}}{{/if}}{{#if personalDetails.github}} | GitHub: {{{personalDetails.github}}}{{/if}}{{#if personalDetails.portfolio}} | Portfolio: {{{personalDetails.portfolio}}}{{/if}}
 
   SKILLS
   --------------------
@@ -125,11 +123,10 @@ const prompt = ai.definePrompt({
   WORK EXPERIENCE
   --------------------
   {{#each workExperience}}
-  Title: {{{this.title}}}
-  Company: {{{this.company}}}
+  Title: {{{this.title}}} at Company: {{{this.company}}}
   Dates: {{{this.startDate}}} - {{{this.endDate}}}
   Description:
-  {{{this.description}}} (Consider formatting this as bullet points, e.g. by starting lines with "- ")
+  {{{this.description}}}
   {{#unless @last}}
 
   {{/unless}}
@@ -140,7 +137,7 @@ const prompt = ai.definePrompt({
   {{#each projects}}
   Project: {{{this.name}}}
   Description:
-  {{{this.description}}} (Consider formatting this as bullet points)
+  {{{this.description}}}
   {{#if this.liveLink}}Live Link: {{{this.liveLink}}}{{/if}}
   {{#if this.githubLink}}GitHub Link: {{{this.githubLink}}}{{/if}}
   {{#unless @last}}
@@ -151,8 +148,7 @@ const prompt = ai.definePrompt({
   EDUCATION
   --------------------
   {{#each education}}
-  Institution: {{{this.institution}}}
-  Degree: {{{this.degree}}}
+  Institution: {{{this.institution}}}, Degree: {{{this.degree}}}
   Dates: {{{this.startDate}}} - {{{this.endDate}}}
   {{#unless @last}}
 
@@ -163,11 +159,10 @@ const prompt = ai.definePrompt({
   VOLUNTEER EXPERIENCE
   --------------------
   {{#each volunteerExperience}}
-  Organization: {{{this.organization}}}
-  Role: {{{this.role}}}
+  Organization: {{{this.organization}}}, Role: {{{this.role}}}
   Dates: {{{this.startDate}}} - {{{this.endDate}}}
   Description:
-  {{{this.description}}} (Consider formatting this as bullet points)
+  {{{this.description}}}
   {{#unless @last}}
 
   {{/unless}}
