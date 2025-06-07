@@ -1,6 +1,7 @@
+
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { GenerateResumeInput } from "@/ai/flows/generate-resume";
@@ -26,15 +27,22 @@ interface ResumeFormProps {
   onResumeGenerated: (resumeText: string) => void;
   setIsLoading: (isLoading: boolean) => void;
   isLoading: boolean;
+  onFormUpdate: (data: GenerateResumeFormValues) => void; // For live preview
 }
 
-export function ResumeForm({ onResumeGenerated, setIsLoading, isLoading }: ResumeFormProps) {
+export function ResumeForm({ onResumeGenerated, setIsLoading, isLoading, onFormUpdate }: ResumeFormProps) {
   const { toast } = useToast();
   const form = useForm<GenerateResumeFormValues>({
     resolver: zodResolver(GenerateResumeFormSchema),
     defaultValues: initialResumeData,
-    mode: "onChange",
+    mode: "onChange", // Important for live updates
   });
+
+  const watchedValues = form.watch();
+
+  useEffect(() => {
+    onFormUpdate(watchedValues);
+  }, [watchedValues, onFormUpdate]);
 
   const onSubmit = async (values: GenerateResumeFormValues) => {
     setIsLoading(true);
@@ -119,3 +127,4 @@ export function ResumeForm({ onResumeGenerated, setIsLoading, isLoading }: Resum
     </Card>
   );
 }
+

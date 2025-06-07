@@ -20,7 +20,7 @@ export function HobbiesForm({ form }: HobbiesFormProps) {
           <FormLabel>Hobbies (Optional)</FormLabel>
           <FormControl>
             <Textarea
-              placeholder="Enter hobbies separated by commas (e.g., Reading, Hiking, Coding)"
+              placeholder="Enter hobbies separated by COMMA (e.g., Reading, Hiking, Coding)"
               {...field}
                onChange={(e) => {
                 const hobbiesArray = e.target.value.split(',').map(hobby => hobby.trim()).filter(hobby => hobby);
@@ -36,3 +36,4 @@ export function HobbiesForm({ form }: HobbiesFormProps) {
     />
   );
 }
+

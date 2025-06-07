@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,6 +14,88 @@ import { ResumePreview } from "./ResumePreview";
 import { ResumeReviewModal } from "./ResumeReviewModal";
 import { useToast } from "@/hooks/use-toast";
 import { Download, Copy, Loader2, FileSearch2 } from "lucide-react";
+import type { GenerateResumeFormValues } from "@/lib/zod-schemas";
+
+// Helper function to generate a basic plain text preview from form data
+const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string => {
+  if (!data) return "";
+  let preview = "";
+
+  if (data.jobProfile) {
+    preview += `${data.jobProfile}\n--------------------\n\n`;
+  }
+
+  preview += "PERSONAL DETAILS\n--------------------\n";
+  preview += `Name: ${data.personalDetails?.name || ""}\n`;
+  preview += `Email: ${data.personalDetails?.email || ""}\n`;
+  preview += `Phone: ${data.personalDetails?.phone || ""}\n`;
+  preview += `Location: ${data.personalDetails?.location || ""}\n`;
+  if (data.personalDetails?.linkedin) preview += `LinkedIn: ${data.personalDetails.linkedin}\n`;
+  if (data.personalDetails?.github) preview += `GitHub: ${data.personalDetails.github}\n`;
+  preview += "\n";
+
+  preview += "SKILLS\n--------------------\n";
+  preview += `${data.skills?.join(", ") || ""}\n\n`;
+
+  if (data.workExperience && data.workExperience.length > 0 && data.workExperience[0].title) { // Check if first item is not empty
+    preview += "WORK EXPERIENCE\n--------------------\n";
+    data.workExperience?.forEach(exp => {
+      if (exp.title || exp.company || exp.description) { // only add if there's some content
+        preview += `Title: ${exp.title || ""}\n`;
+        preview += `Company: ${exp.company || ""}\n`;
+        preview += `Dates: ${exp.startDate || ""} - ${exp.endDate || ""}\n`;
+        preview += `Description:\n${exp.description || ""}\n\n`;
+      }
+    });
+  }
+
+
+  if (data.projects && data.projects.length > 0 && data.projects[0].name) {
+    preview += "PROJECTS\n--------------------\n";
+    data.projects?.forEach(proj => {
+      if (proj.name || proj.description) {
+        preview += `Project: ${proj.name || ""}\n`;
+        preview += `Description:\n${proj.description || ""}\n`;
+        if (proj.liveLink) preview += `Live Link: ${proj.liveLink}\n`;
+        if (proj.githubLink) preview += `GitHub Link: ${proj.githubLink}\n`;
+        preview += "\n";
+      }
+    });
+  }
+
+
+  if (data.education && data.education.length > 0 && data.education[0].institution) {
+    preview += "EDUCATION\n--------------------\n";
+    data.education?.forEach(edu => {
+      if (edu.institution || edu.degree) {
+        preview += `Institution: ${edu.institution || ""}\n`;
+        preview += `Degree: ${edu.degree || ""}\n`;
+        preview += `Dates: ${edu.startDate || ""} - ${edu.endDate || ""}\n\n`;
+      }
+    });
+  }
+
+
+  if (data.volunteerExperience && data.volunteerExperience.length > 0 && data.volunteerExperience[0].organization) {
+    preview += "VOLUNTEER EXPERIENCE\n--------------------\n";
+    data.volunteerExperience.forEach(vol => {
+       if (vol.organization || vol.role || vol.description) {
+        preview += `Organization: ${vol.organization || ""}\n`;
+        preview += `Role: ${vol.role || ""}\n`;
+        preview += `Dates: ${vol.startDate || ""} - ${vol.endDate || ""}\n`;
+        preview += `Description:\n${vol.description || ""}\n\n`;
+      }
+    });
+  }
+
+  if (data.hobbies && data.hobbies.length > 0) {
+    preview += "HOBBIES\n--------------------\n";
+    preview += `${data.hobbies.join(", ") || ""}\n\n`;
+  }
+
+  return preview.trim();
+};
+
 
 export function ResumeBuilder() {
   const { toast } = useToast();
@@ -24,29 +106,37 @@ export function ResumeBuilder() {
   const [generatedResume, setGeneratedResume] = useState("");
   
   const [isLoadingOptimize, setIsLoadingOptimize] = useState(false);
-  const [isLoadingGenerate, setIsLoadingGenerate] = useState(false); // Used by ResumeForm
+  const [isLoadingGenerate, setIsLoadingGenerate] = useState(false);
   const [isLoadingTailor, setIsLoadingTailor] = useState(false);
   const [isLoadingReview, setIsLoadingReview] = useState(false);
   
   const [reviewData, setReviewData] = useState<TailorResumeOutput["review"] | null>(null);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
-  // Load saved data from localStorage (excluding generatedResume and pastedResume)
   useEffect(() => {
     const savedJobTitle = localStorage.getItem("alignai_jobTitle");
     if (savedJobTitle) setJobTitle(savedJobTitle);
     const savedJobDescription = localStorage.getItem("alignai_jobDescription");
     if (savedJobDescription) setJobDescription(savedJobDescription);
+    // Clear pastedResume on mount to ensure it's blank on refresh
+    setPastedResume("");
+    // Clear generatedResume on mount
+    setGeneratedResume(""); 
   }, []);
 
-  // Save data to localStorage (excluding generatedResume and pastedResume)
-   useEffect(() => {
+  useEffect(() => {
     localStorage.setItem("alignai_jobTitle", jobTitle);
   }, [jobTitle]);
   useEffect(() => {
     localStorage.setItem("alignai_jobDescription", jobDescription);
   }, [jobDescription]);
 
+  const handleFormUpdate = useCallback((formData: GenerateResumeFormValues) => {
+    if (inputMode === "form") {
+      const plainTextPreview = generatePlainTextPreview(formData);
+      setGeneratedResume(plainTextPreview);
+    }
+  }, [inputMode]);
 
   const handleOptimizeResume = async () => {
     if (!pastedResume.trim()) {
@@ -137,6 +227,24 @@ export function ResumeBuilder() {
     URL.revokeObjectURL(link.href);
     toast({ title: "Downloaded!", description: "Resume downloaded as AlignAI_Resume.txt." });
   };
+  
+  // When switching input modes, if switching to "form", initialize preview with current form data
+  // if switching away from "form", clear the generated resume if it was form-driven to avoid stale preview
+   useEffect(() => {
+    if (inputMode === 'paste') {
+       // If user typed in form, then switched to paste, and pastedResume is empty,
+       // it's good to clear the generatedResume to avoid showing stale form preview
+      if (pastedResume === "") {
+        setGeneratedResume("");
+      } else {
+        // If there is pasted resume, set it as the preview
+        setGeneratedResume(pastedResume); 
+      }
+    }
+    // If switching to form, the ResumeForm's useEffect will trigger handleFormUpdate
+    // and set the preview based on initial form data.
+  }, [inputMode, pastedResume]);
+
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
@@ -151,6 +259,7 @@ export function ResumeBuilder() {
               onResumeGenerated={setGeneratedResume} 
               setIsLoading={setIsLoadingGenerate}
               isLoading={isLoadingGenerate}
+              onFormUpdate={handleFormUpdate}
             />
           </TabsContent>
           <TabsContent value="paste" className="mt-6">
@@ -162,11 +271,17 @@ export function ResumeBuilder() {
                 <Textarea
                   placeholder="Paste your resume text here..."
                   value={pastedResume}
-                  onChange={(e) => setPastedResume(e.target.value)}
+                  onChange={(e) => {
+                    setPastedResume(e.target.value);
+                    // Update preview if in paste mode
+                    if (inputMode === 'paste') {
+                        setGeneratedResume(e.target.value);
+                    }
+                  }}
                   rows={15}
                   className="min-h-[300px]"
                 />
-                <Button onClick={handleOptimizeResume} className="w-full" disabled={isLoadingOptimize}>
+                <Button onClick={handleOptimizeResume} className="w-full" disabled={isLoadingOptimize || !pastedResume.trim()}>
                   {isLoadingOptimize ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   Optimize Resume with AI
                 </Button>
@@ -229,3 +344,4 @@ export function ResumeBuilder() {
     </div>
   );
 }
+
