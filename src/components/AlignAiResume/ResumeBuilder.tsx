@@ -67,22 +67,27 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
   }
 
   // Work Experience
-  const hasWorkExperience = data.workExperience && data.workExperience.length > 0 && data.workExperience.some(exp => Object.values(exp).some(val => typeof val === 'string' && val.trim() !== ""));
+  const hasWorkExperience = data.workExperience && data.workExperience.length > 0 && data.workExperience.some(exp => Object.values(exp).some(val => typeof val === 'string' && val.trim() !== "" || (Array.isArray(val) && val.length > 0)));
   if (hasWorkExperience) {
     preview += "WORK EXPERIENCE\n";
     preview += "--------------------\n";
     data.workExperience.forEach(exp => {
-      const hasContent = Object.values(exp).some(val => typeof val === 'string' && val.trim() !== "");
-      if (hasContent) {
+      const hasTitle = exp.title && exp.title.trim() !== "";
+      const hasCompany = exp.company && exp.company.trim() !== "";
+      const hasStartDate = exp.startDate && exp.startDate.trim() !== "";
+      const hasEndDate = exp.endDate && exp.endDate.trim() !== "";
+      const hasDescription = exp.description && exp.description.trim() !== "";
+
+      if (hasTitle || hasCompany || hasStartDate || hasEndDate || hasDescription) {
         let expHeaderParts = [];
-        if (exp.title && exp.title.trim()) expHeaderParts.push(exp.title.trim().toUpperCase());
-        if (exp.company && exp.company.trim()) expHeaderParts.push(`at ${exp.company.trim()}`);
+        if (hasTitle) expHeaderParts.push(exp.title.trim().toUpperCase());
+        if (hasCompany) expHeaderParts.push(`at ${exp.company.trim()}`);
         if (expHeaderParts.length > 0) preview += `${expHeaderParts.join(" ")}\n`;
         
-        if ((exp.startDate && exp.startDate.trim()) || (exp.endDate && exp.endDate.trim())) {
-          preview += `${exp.startDate ? exp.startDate.trim() : "N/A"} - ${exp.endDate ? exp.endDate.trim() : "N/A"}\n`;
+        if (hasStartDate || hasEndDate) {
+          preview += `${hasStartDate ? exp.startDate.trim() : "N/A"} - ${hasEndDate ? exp.endDate.trim() : "N/A"}\n`;
         }
-        if (exp.description && exp.description.trim()) {
+        if (hasDescription) {
           exp.description.trim().split('\n').forEach(line => {
             if (line.trim()) preview += `- ${line.trim()}\n`;
           });
@@ -93,25 +98,29 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
   }
 
   // Projects
-  const hasProjects = data.projects && data.projects.length > 0 && data.projects.some(proj => Object.values(proj).some(val => typeof val === 'string' && val.trim() !== ""));
+  const hasProjects = data.projects && data.projects.length > 0 && data.projects.some(proj => Object.values(proj).some(val => typeof val === 'string' && val.trim() !== "" || (Array.isArray(val) && val.length > 0)));
   if (hasProjects) {
     preview += "PROJECTS\n";
     preview += "--------------------\n";
     data.projects.forEach(proj => {
-       const hasContent = Object.values(proj).some(val => typeof val === 'string' && val.trim() !== "");
-       if (hasContent) {
-        if (proj.name && proj.name.trim()) {
+       const hasName = proj.name && proj.name.trim() !== "";
+       const hasDescription = proj.description && proj.description.trim() !== "";
+       const hasLiveLink = proj.liveLink && proj.liveLink.trim() !== "";
+       const hasGithubLink = proj.githubLink && proj.githubLink.trim() !== "";
+
+       if (hasName || hasDescription || hasLiveLink || hasGithubLink) {
+        if (hasName) {
           preview += `${proj.name.trim().toUpperCase()}\n`;
         }
-        if (proj.description && proj.description.trim()) {
+        if (hasDescription) {
            proj.description.trim().split('\n').forEach(line => {
             if (line.trim()) preview += `- ${line.trim()}\n`;
           });
         }
-        if (proj.liveLink && proj.liveLink.trim()) {
+        if (hasLiveLink) {
           preview += `Live Link: ${proj.liveLink.trim()}\n`;
         }
-        if (proj.githubLink && proj.githubLink.trim()) {
+        if (hasGithubLink) {
           preview += `GitHub Link: ${proj.githubLink.trim()}\n`;
         }
         preview += "\n"; 
@@ -120,20 +129,24 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
   }
 
   // Education
-  const hasEducation = data.education && data.education.length > 0 && data.education.some(edu => Object.values(edu).some(val => typeof val === 'string' && val.trim() !== ""));
+  const hasEducation = data.education && data.education.length > 0 && data.education.some(edu => Object.values(edu).some(val => typeof val === 'string' && val.trim() !== "" || (Array.isArray(val) && val.length > 0)));
   if (hasEducation) {
     preview += "EDUCATION\n";
     preview += "--------------------\n";
     data.education.forEach(edu => {
-      const hasContent = Object.values(edu).some(val => typeof val === 'string' && val.trim() !== "");
-      if (hasContent) { 
+      const hasInstitution = edu.institution && edu.institution.trim() !== "";
+      const hasDegree = edu.degree && edu.degree.trim() !== "";
+      const hasStartDate = edu.startDate && edu.startDate.trim() !== "";
+      const hasEndDate = edu.endDate && edu.endDate.trim() !== "";
+
+      if (hasInstitution || hasDegree || hasStartDate || hasEndDate) { 
         let eduHeaderParts = [];
-        if (edu.degree && edu.degree.trim()) eduHeaderParts.push(edu.degree.trim());
-        if (edu.institution && edu.institution.trim()) eduHeaderParts.push(edu.institution.trim());
+        if (hasDegree) eduHeaderParts.push(edu.degree.trim());
+        if (hasInstitution) eduHeaderParts.push(edu.institution.trim());
          if (eduHeaderParts.length > 0) preview += `${eduHeaderParts.join(", ")}\n`;
 
-        if ((edu.startDate && edu.startDate.trim()) || (edu.endDate && edu.endDate.trim())) {
-          preview += `${edu.startDate ? edu.startDate.trim() : "N/A"} - ${edu.endDate ? edu.endDate.trim() : "N/A"}\n`;
+        if (hasStartDate || hasEndDate) {
+          preview += `${hasStartDate ? edu.startDate.trim() : "N/A"} - ${hasEndDate ? edu.endDate.trim() : "N/A"}\n`;
         }
         preview += "\n"; 
       }
@@ -141,22 +154,27 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
   }
   
   // Volunteer Experience
-  const hasVolunteerExperience = data.volunteerExperience && data.volunteerExperience.length > 0 && data.volunteerExperience.some(vol => Object.values(vol).some(val => typeof val === 'string' && val && val.trim() !== ""));
+  const hasVolunteerExperience = data.volunteerExperience && data.volunteerExperience.length > 0 && data.volunteerExperience.some(vol => Object.values(vol).some(val => typeof val === 'string' && val && val.trim() !== "" || (Array.isArray(val) && val.length > 0)));
   if (hasVolunteerExperience) {
     preview += "VOLUNTEER EXPERIENCE\n";
     preview += "--------------------\n";
     data.volunteerExperience.forEach(vol => {
-      const hasContent = Object.values(vol).some(val => typeof val === 'string' && val && val.trim() !== "");
-      if (hasContent) {
+      const hasOrganization = vol.organization && vol.organization.trim() !== "";
+      const hasRole = vol.role && vol.role.trim() !== "";
+      const hasStartDate = vol.startDate && vol.startDate.trim() !== "";
+      const hasEndDate = vol.endDate && vol.endDate.trim() !== "";
+      const hasDescription = vol.description && vol.description.trim() !== "";
+
+      if (hasOrganization || hasRole || hasStartDate || hasEndDate || hasDescription) {
         let volHeaderParts = [];
-        if (vol.role && vol.role.trim()) volHeaderParts.push(vol.role.trim().toUpperCase());
-        if (vol.organization && vol.organization.trim()) volHeaderParts.push(`at ${vol.organization.trim()}`);
+        if (hasRole) volHeaderParts.push(vol.role.trim().toUpperCase());
+        if (hasOrganization) volHeaderParts.push(`at ${vol.organization.trim()}`);
         if (volHeaderParts.length > 0) preview += `${volHeaderParts.join(" ")}\n`;
         
-        if ((vol.startDate && vol.startDate.trim()) || (vol.endDate && vol.endDate.trim())) {
-          preview += `${vol.startDate ? vol.startDate.trim() : "N/A"} - ${vol.endDate ? vol.endDate.trim() : "N/A"}\n`;
+        if (hasStartDate || hasEndDate) {
+          preview += `${hasStartDate ? vol.startDate.trim() : "N/A"} - ${hasEndDate ? vol.endDate.trim() : "N/A"}\n`;
         }
-        if (vol.description && vol.description.trim()) {
+        if (hasDescription) {
            vol.description.trim().split('\n').forEach(line => {
             if (line.trim()) preview += `- ${line.trim()}\n`;
           });
@@ -193,15 +211,17 @@ export function ResumeBuilder() {
   const [reviewData, setReviewData] = useState<TailorResumeOutput["review"] | null>(null);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
-  useEffect(() => {
+ useEffect(() => {
     const savedJobTitle = localStorage.getItem("alignai_jobTitle");
     if (savedJobTitle) setJobTitle(savedJobTitle);
     const savedJobDescription = localStorage.getItem("alignai_jobDescription");
     if (savedJobDescription) setJobDescription(savedJobDescription);
     
+    // Clear resume related states on mount/refresh
     setPastedResume(""); 
     setGeneratedResume(""); 
   }, []);
+
 
   useEffect(() => {
     if (jobTitle) { 
@@ -317,20 +337,39 @@ export function ResumeBuilder() {
   };
   
    useEffect(() => {
+    // When switching to 'paste' mode, if pastedResume is empty, clear generatedResume.
+    // Otherwise, set generatedResume to pastedResume.
     if (inputMode === 'paste') {
-      if (pastedResume === "") {
+      if (pastedResume.trim() === "") {
         setGeneratedResume(""); 
       } else {
         setGeneratedResume(pastedResume); 
       }
     }
+    // If switching to 'form' mode, the live preview is handled by onFormUpdate.
+    // If there's existing form data, it will repopulate the preview.
+    // If the form is empty, the preview will be empty.
   }, [inputMode, pastedResume]);
 
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
       <div className="space-y-6">
-        <Tabs value={inputMode} onValueChange={(value) => setInputMode(value as "paste" | "form")} className="w-full">
+        <Tabs value={inputMode} onValueChange={(value) => {
+            const newMode = value as "paste" | "form";
+            setInputMode(newMode);
+            // If switching to form mode, and the form is empty, clear the generated resume.
+            // The ResumeForm's useEffect will trigger onFormUpdate which will then populate the preview.
+            if (newMode === 'form') {
+                 // Let ResumeForm's onFormUpdate handle the preview based on current form state
+            } else { // Switching to paste mode
+                if (pastedResume.trim() === "") {
+                    setGeneratedResume("");
+                } else {
+                    setGeneratedResume(pastedResume);
+                }
+            }
+        }} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="form">Build with Form</TabsTrigger>
             <TabsTrigger value="paste">Paste Existing Resume</TabsTrigger>
