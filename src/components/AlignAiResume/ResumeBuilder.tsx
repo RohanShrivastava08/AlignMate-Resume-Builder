@@ -21,60 +21,63 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
   if (!data) return "";
   let preview = "";
 
-  if (data.jobProfile) {
-    preview += `${data.jobProfile.toUpperCase()}\n\n`;
+  if (data.jobProfile && data.jobProfile.trim() !== "") {
+    preview += `${data.jobProfile.trim().toUpperCase()}\n\n`;
   }
 
   if (data.personalDetails) {
-    if (data.personalDetails.name) {
-      preview += `${data.personalDetails.name.toUpperCase()}\n`;
+    if (data.personalDetails.name && data.personalDetails.name.trim() !== "") {
+      preview += `${data.personalDetails.name.trim().toUpperCase()}\n`;
     }
     const contactParts = [
       data.personalDetails.email,
       data.personalDetails.phone,
       data.personalDetails.location,
-    ].filter(Boolean);
+    ].filter(val => val && val.trim() !== "");
     if (contactParts.length > 0) {
       preview += `${contactParts.join(" | ")}\n`;
     }
     
     const linkParts = [];
-    if (data.personalDetails.linkedin) {
-      linkParts.push(`🌐 LinkedIn: ${data.personalDetails.linkedin}`);
+    if (data.personalDetails.linkedin && data.personalDetails.linkedin.trim() !== "") {
+      linkParts.push(`🌐 LinkedIn: ${data.personalDetails.linkedin.trim()}`);
     }
-    if (data.personalDetails.github) {
-      linkParts.push(`🐙 GitHub: ${data.personalDetails.github}`);
+    if (data.personalDetails.github && data.personalDetails.github.trim() !== "") {
+      linkParts.push(`🐙 GitHub: ${data.personalDetails.github.trim()}`);
     }
-    if (data.personalDetails.portfolio) {
-      linkParts.push(`💼 Portfolio: ${data.personalDetails.portfolio}`);
+    if (data.personalDetails.portfolio && data.personalDetails.portfolio.trim() !== "") {
+      linkParts.push(`💼 Portfolio: ${data.personalDetails.portfolio.trim()}`);
     }
     if (linkParts.length > 0) {
       preview += `${linkParts.join(" | ")}\n`;
     }
-    preview += "\n";
+    if (preview.trim() !== "" && (data.personalDetails.name || contactParts.length > 0 || linkParts.length > 0)) {
+        preview += "\n";
+    }
   }
 
-  if (data.skills && data.skills.length > 0 && data.skills.some(skill => skill.trim() !== "")) {
+  if (data.skills && data.skills.length > 0 && data.skills.some(skill => skill && skill.trim() !== "")) {
     preview += "SKILLS\n";
     preview += "--------------------\n";
-    preview += `${data.skills.filter(skill => skill.trim() !== "").join(", ")}\n\n`;
+    preview += `${data.skills.filter(skill => skill && skill.trim() !== "").map(s => s.trim()).join(", ")}\n\n`;
   }
 
-  if (data.workExperience && data.workExperience.length > 0 && data.workExperience.some(exp => Object.values(exp).some(val => !!val && String(val).trim() !== ""))) {
+  const hasWorkExperience = data.workExperience && data.workExperience.length > 0 && data.workExperience.some(exp => Object.values(exp).some(val => val && String(val).trim() !== ""));
+  if (hasWorkExperience) {
     preview += "WORK EXPERIENCE\n";
     preview += "--------------------\n";
     data.workExperience.forEach(exp => {
-      if (Object.values(exp).some(val => !!val && String(val).trim() !== "")) {
-        let expHeader = [];
-        if (exp.title) expHeader.push(exp.title.toUpperCase());
-        if (exp.company) expHeader.push(`at ${exp.company}`);
-        if (expHeader.length > 0) preview += `${expHeader.join(" ")}\n`;
+      if (Object.values(exp).some(val => val && String(val).trim() !== "")) {
+        let expHeaderParts = [];
+        if (exp.title && exp.title.trim()) expHeaderParts.push(exp.title.trim().toUpperCase());
+        if (exp.company && exp.company.trim()) expHeaderParts.push(`at ${exp.company.trim()}`);
+        if (expHeaderParts.length > 0) preview += `${expHeaderParts.join(" ")}\n`;
         
-        if (exp.startDate || exp.endDate) {
-          preview += `${exp.startDate || ""} - ${exp.endDate || ""}\n`;
+        if ((exp.startDate && exp.startDate.trim()) || (exp.endDate && exp.endDate.trim())) {
+          preview += `${exp.startDate ? exp.startDate.trim() : ""} - ${exp.endDate ? exp.endDate.trim() : ""}\n`;
         }
-        if (exp.description) {
-          exp.description.split('\n').forEach(line => {
+        if (exp.description && exp.description.trim()) {
+          exp.description.trim().split('\n').forEach(line => {
             if (line.trim()) preview += `- ${line.trim()}\n`;
           });
         }
@@ -83,22 +86,23 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
     });
   }
 
-  if (data.projects && data.projects.length > 0 && data.projects.some(proj => Object.values(proj).some(val => !!val && String(val).trim() !== ""))) {
+  const hasProjects = data.projects && data.projects.length > 0 && data.projects.some(proj => Object.values(proj).some(val => val && String(val).trim() !== ""));
+  if (hasProjects) {
     preview += "PROJECTS\n";
     preview += "--------------------\n";
     data.projects.forEach(proj => {
-       if (Object.values(proj).some(val => !!val && String(val).trim() !== "")) {
-        if (proj.name) {
-          preview += `${proj.name.toUpperCase()}\n`;
+       if (Object.values(proj).some(val => val && String(val).trim() !== "")) {
+        if (proj.name && proj.name.trim()) {
+          preview += `${proj.name.trim().toUpperCase()}\n`;
         }
         const links = [];
-        if (proj.liveLink) links.push(`Live: ${proj.liveLink}`);
-        if (proj.githubLink) links.push(`GitHub: ${proj.githubLink}`);
+        if (proj.liveLink && proj.liveLink.trim()) links.push(`Live: ${proj.liveLink.trim()}`);
+        if (proj.githubLink && proj.githubLink.trim()) links.push(`GitHub: ${proj.githubLink.trim()}`);
         if (links.length > 0) {
           preview += `Links: ${links.join(" | ")}\n`;
         }
-        if (proj.description) {
-           proj.description.split('\n').forEach(line => {
+        if (proj.description && proj.description.trim()) {
+           proj.description.trim().split('\n').forEach(line => {
             if (line.trim()) preview += `- ${line.trim()}\n`;
           });
         }
@@ -107,39 +111,41 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
     });
   }
 
-  if (data.education && data.education.length > 0 && data.education.some(edu => Object.values(edu).some(val => !!val && String(val).trim() !== ""))) {
+  const hasEducation = data.education && data.education.length > 0 && data.education.some(edu => Object.values(edu).some(val => val && String(val).trim() !== ""));
+  if (hasEducation) {
     preview += "EDUCATION\n";
     preview += "--------------------\n";
     data.education.forEach(edu => {
-      if (Object.values(edu).some(val => !!val && String(val).trim() !== "")) {
-        let eduHeader = [];
-        if (edu.degree) eduHeader.push(edu.degree);
-        if (edu.institution) eduHeader.push(edu.institution);
-        if (eduHeader.length > 0) preview += `${eduHeader.join(", ")}\n`;
+      if (Object.values(edu).some(val => val && String(val).trim() !== "")) {
+        let eduHeaderParts = [];
+        if (edu.degree && edu.degree.trim()) eduHeaderParts.push(edu.degree.trim());
+        if (edu.institution && edu.institution.trim()) eduHeaderParts.push(edu.institution.trim());
+         if (eduHeaderParts.length > 0) preview += `${eduHeaderParts.join(", ")}\n`;
 
-        if (edu.startDate || edu.endDate) {
-          preview += `${edu.startDate || ""} - ${edu.endDate || ""}\n`;
+        if ((edu.startDate && edu.startDate.trim()) || (edu.endDate && edu.endDate.trim())) {
+          preview += `${edu.startDate ? edu.startDate.trim() : ""} - ${edu.endDate ? edu.endDate.trim() : ""}\n`;
         }
         preview += "\n";
       }
     });
   }
-
-  if (data.volunteerExperience && data.volunteerExperience.length > 0 && data.volunteerExperience.some(vol => Object.values(vol).some(val => !!val && String(val).trim() !== ""))) {
+  
+  const hasVolunteerExperience = data.volunteerExperience && data.volunteerExperience.length > 0 && data.volunteerExperience.some(vol => Object.values(vol).some(val => val && String(val).trim() !== ""));
+  if (hasVolunteerExperience) {
     preview += "VOLUNTEER EXPERIENCE\n";
     preview += "--------------------\n";
     data.volunteerExperience.forEach(vol => {
-      if (Object.values(vol).some(val => !!val && String(val).trim() !== "")) {
-        let volHeader = [];
-        if (vol.role) volHeader.push(vol.role.toUpperCase());
-        if (vol.organization) volHeader.push(`at ${vol.organization}`);
-        if (volHeader.length > 0) preview += `${volHeader.join(" ")}\n`;
+      if (Object.values(vol).some(val => val && String(val).trim() !== "")) {
+        let volHeaderParts = [];
+        if (vol.role && vol.role.trim()) volHeaderParts.push(vol.role.trim().toUpperCase());
+        if (vol.organization && vol.organization.trim()) volHeaderParts.push(`at ${vol.organization.trim()}`);
+        if (volHeaderParts.length > 0) preview += `${volHeaderParts.join(" ")}\n`;
         
-        if (vol.startDate || vol.endDate) {
-          preview += `${vol.startDate || ""} - ${vol.endDate || ""}\n`;
+        if ((vol.startDate && vol.startDate.trim()) || (vol.endDate && vol.endDate.trim())) {
+          preview += `${vol.startDate ? vol.startDate.trim() : ""} - ${vol.endDate ? vol.endDate.trim() : ""}\n`;
         }
-        if (vol.description) {
-           vol.description.split('\n').forEach(line => {
+        if (vol.description && vol.description.trim()) {
+           vol.description.trim().split('\n').forEach(line => {
             if (line.trim()) preview += `- ${line.trim()}\n`;
           });
         }
@@ -148,10 +154,10 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
     });
   }
 
-  if (data.hobbies && data.hobbies.length > 0 && data.hobbies.some(hobby => hobby.trim() !== "")) {
+  if (data.hobbies && data.hobbies.length > 0 && data.hobbies.some(hobby => hobby && hobby.trim() !== "")) {
     preview += "HOBBIES\n";
     preview += "--------------------\n";
-    preview += `${data.hobbies.filter(hobby => hobby.trim() !== "").join(", ")}\n\n`;
+    preview += `${data.hobbies.filter(hobby => hobby && hobby.trim() !== "").map(h => h.trim()).join(", ")}\n\n`;
   }
 
   return preview.trim();
@@ -175,11 +181,13 @@ export function ResumeBuilder() {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
   useEffect(() => {
+    // Load job title and description from localStorage
     const savedJobTitle = localStorage.getItem("alignai_jobTitle");
     if (savedJobTitle) setJobTitle(savedJobTitle);
     const savedJobDescription = localStorage.getItem("alignai_jobDescription");
     if (savedJobDescription) setJobDescription(savedJobDescription);
     
+    // Clear pasted resume and generated resume on mount
     setPastedResume(""); 
     setGeneratedResume(""); 
   }, []);
@@ -187,6 +195,7 @@ export function ResumeBuilder() {
   useEffect(() => {
     localStorage.setItem("alignai_jobTitle", jobTitle);
   }, [jobTitle]);
+
   useEffect(() => {
     localStorage.setItem("alignai_jobDescription", jobDescription);
   }, [jobDescription]);
@@ -293,10 +302,12 @@ export function ResumeBuilder() {
       if (pastedResume === "") {
         setGeneratedResume(""); 
       } else {
+        // When pasting, the pasted content itself is the preview until optimized.
         setGeneratedResume(pastedResume); 
       }
     }
-  }, [inputMode, pastedResume, handleFormUpdate]);
+    // For 'form' mode, live updates are handled by `handleFormUpdate`
+  }, [inputMode, pastedResume]);
 
 
   return (
@@ -326,7 +337,7 @@ export function ResumeBuilder() {
                   value={pastedResume}
                   onChange={(e) => {
                     setPastedResume(e.target.value);
-                    if (inputMode === 'paste') { 
+                    if (inputMode === 'paste') { // Update preview if in paste mode
                         setGeneratedResume(e.target.value);
                     }
                   }}

@@ -11,7 +11,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Linkedin, Github, Briefcase } from "lucide-react"; // Or Link for portfolio
 
 interface PersonalDetailsFormProps {
   form: UseFormReturn<GenerateResumeFormValues>;
@@ -77,9 +76,7 @@ export function PersonalDetailsForm({ form }: PersonalDetailsFormProps) {
         name="personalDetails.linkedin"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="flex items-center">
-              <Linkedin className="mr-2 h-4 w-4" /> LinkedIn Profile (Optional)
-            </FormLabel>
+            <FormLabel>LinkedIn Profile (Optional)</FormLabel>
             <FormControl>
               <Input placeholder="e.g., linkedin.com/in/priyasharma" {...field} />
             </FormControl>
@@ -92,9 +89,7 @@ export function PersonalDetailsForm({ form }: PersonalDetailsFormProps) {
         name="personalDetails.github"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="flex items-center">
-              <Github className="mr-2 h-4 w-4" /> GitHub Profile (Optional)
-            </FormLabel>
+            <FormLabel>GitHub Profile (Optional)</FormLabel>
             <FormControl>
               <Input placeholder="e.g., github.com/priyasharma" {...field} />
             </FormControl>
@@ -107,9 +102,7 @@ export function PersonalDetailsForm({ form }: PersonalDetailsFormProps) {
         name="personalDetails.portfolio"
         render={({ field }) => (
           <FormItem className="md:col-span-2">
-            <FormLabel className="flex items-center">
-              <Briefcase className="mr-2 h-4 w-4" /> Portfolio URL (Optional)
-            </FormLabel>
+            <FormLabel>Portfolio URL (Optional)</FormLabel>
             <FormControl>
               <Input placeholder="e.g., yourportfolio.com" {...field} />
             </FormControl>
@@ -120,3 +113,4 @@ export function PersonalDetailsForm({ form }: PersonalDetailsFormProps) {
     </div>
   );
 }
+
