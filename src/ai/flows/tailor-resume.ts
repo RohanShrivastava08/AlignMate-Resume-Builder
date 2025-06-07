@@ -19,25 +19,26 @@ const TailorResumeInputSchema = z.object({
     .describe('The text of the resume to be tailored.'),
   jobDescription: z
     .string()
-    .describe('The job description to tailor the resume to.'),
+    .describe('The job description to tailor the resume to. This includes job role, profile, specific requirements, skills, and technologies mentioned.'),
 });
 export type TailorResumeInput = z.infer<typeof TailorResumeInputSchema>;
 
 const TailorResumeOutputSchema = z.object({
   tailoredResume: z
     .string()
-    .describe('The tailored resume, optimized for the job description. This should be in PLAIN TEXT format, ATS-friendly, and ready to copy-paste.'),
+    .describe('The tailored resume, heavily optimized for the job description. This should be in PLAIN TEXT format, ATS-friendly, and ready to copy-paste. It must incorporate keywords and align content with the job description effectively.'),
   review: z.object({
-    strengths: z.string().describe('Strengths of the resume in relation to the job description.'),
-    weaknesses: z.string().describe('Weaknesses of the resume in relation to the job description.'),
-    atsScore: z.number().describe('Estimated ATS score percentage (0-100) of the resume against the job description.'),
-    readability: z.string().describe('Readability assessment of the resume (e.g., "Good", "Fair", "Needs Improvement with reasons").'),
+    strengths: z.string().describe('Specific strengths of the resume in relation to the key requirements of the job description.'),
+    weaknesses: z.string().describe('Specific weaknesses or gaps in the resume when compared against the job description.'),
+    atsScore: z.number().min(0).max(100).describe('Estimated ATS score percentage (0-100) of the resume against the job description, considering keyword match and structure.'),
+    readability: z.string().describe('Readability assessment of the resume (e.g., "Excellent: Clear and concise", "Good: Generally easy to read", "Fair: Could be more concise", "Needs Improvement: Difficult to parse, lengthy sentences, or jargon").'),
     keywordMatchRate: z
       .number()
-      .describe('Estimated keyword match rate percentage (0-100) of the resume with the job description.'),
+      .min(0).max(100)
+      .describe('Estimated keyword match rate percentage (0-100) of the resume with the most important keywords from the job description.'),
     suggestions: z
       .string()
-      .describe('Specific, actionable suggestions to further improve the resume for this particular job description.'),
+      .describe('Specific, actionable suggestions to further improve the resume for this particular job description. Focus on missing keywords, areas to elaborate, or rephrasing for impact.'),
   }),
 });
 
@@ -53,23 +54,23 @@ const tailorResumePrompt = ai.definePrompt({
   output: {schema: TailorResumeOutputSchema},
   prompt: `You are an expert resume writer and career consultant specializing in tailoring resumes to specific job descriptions for optimal impact and ATS compatibility.
 
-  **Objective:** Analyze the provided resume and job description. Generate a new, tailored version of the resume that is heavily optimized for the given job description. Also, provide a comprehensive review. The tailored resume MUST be in PLAIN TEXT format.
+  **Objective:** Analyze the provided resume and job description. Generate a new, tailored version of the resume that is heavily optimized for the given job description, focusing on the job role, profile, and specific requirements mentioned. Also, provide a comprehensive and actionable review. The tailored resume MUST be in PLAIN TEXT format.
 
   **Key Tailoring Instructions for the Resume:**
-  1.  **Keyword Integration:** Scrutinize the job description for key skills, technologies, responsibilities, and qualifications (job role, profile, specific requirements). Strategically and naturally weave these exact keywords and phrases from the job description into the resume content, especially in the summary (if applicable), skills, experience, and project sections.
-  2.  **Highlight Relevance:** Rephrase and reorder bullet points and descriptions to directly address the requirements mentioned in the job description. Emphasize accomplishments and experiences that are most relevant.
-  3.  **Address Gaps (Implicitly):** If the resume lacks certain skills or experiences mentioned prominently in the job description, the tailored resume should reflect this focus, perhaps by slightly re-prioritizing existing content or by making it clear where transferable skills apply. Do not invent experiences.
-  4.  **Tone and Language:** Mirror the tone and language of the job description where appropriate (e.g., if it's for a fast-paced startup vs. a large corporation).
-  5.  **ATS-Friendly Plain Text:** The output tailored resume MUST be in clean, well-structured PLAIN TEXT, ready for copy-pasting. Use standard headings (e.g., SUMMARY, EXPERIENCE, SKILLS) and bullet points.
+  1.  **Deep Keyword Integration:** Meticulously scrutinize the job description for key skills, technologies, responsibilities, qualifications, desired experience, job role specifics, and company culture cues. Strategically and naturally weave these exact keywords and phrases from the job description into the resume content, especially in the summary/job profile (if applicable), skills, work experience, and project sections.
+  2.  **Highlight Relevance & Impact:** Rephrase and reorder bullet points and descriptions to directly address and showcase experience relevant to the requirements mentioned in the job description. Emphasize accomplishments and experiences that are most valuable for THIS specific role. Quantify achievements where possible.
+  3.  **Structure for Job Profile:** If the resume has a summary or objective, rewrite it to align perfectly with the target job role and company if information is available.
+  4.  **Address Gaps (Implicitly & Explicitly):** If the resume lacks certain skills or experiences mentioned prominently in the job description, the tailored resume should try to bridge these. This might involve re-prioritizing existing content to show transferable skills, or subtly rephrasing responsibilities. Do not invent experiences, but maximize the presentation of existing ones.
+  5.  **Tone and Language:** Mirror the tone and language of the job description where appropriate (e.g., if it emphasizes innovation, collaboration, fast-paced environment).
+  6.  **ATS-Friendly Plain Text:** The output tailored resume MUST be in clean, well-structured PLAIN TEXT, ready for copy-pasting. Use standard headings (e.g., SUMMARY/PROFILE, EXPERIENCE, SKILLS, PROJECTS, EDUCATION) and bullet points (e.g., starting lines with '- ').
 
-  **Review Section Instructions:**
-  Provide a concise review covering:
-  - Strengths: What parts of the resume align well with the job description?
-  - Weaknesses: What are the key areas where the resume falls short for this specific role?
-  - ATS Score: An estimated percentage (0-100) reflecting how well the resume might perform in an ATS for this job.
-  - Readability: A brief assessment of its clarity and ease of reading.
-  - Keyword Match Rate: An estimated percentage (0-100) of how well keywords from the job description are present in the resume.
-  - Suggestions: Actionable advice to further improve the resume specifically for this job description.
+  **Review Section Instructions (Be specific and actionable):**
+  - Strengths: What specific parts of the resume align well with the most important requirements of the job description? (e.g., "Excellent alignment with 'Project Management' skill due to experience X").
+  - Weaknesses: What are the key areas where the resume falls short for this specific role? Be specific. (e.g., "Lacks explicit mention of 'Agile methodologies' which is a core requirement").
+  - ATS Score: An estimated percentage (0-100) reflecting how well the resume might perform in an ATS for this job, considering keyword density and structure.
+  - Readability: A brief assessment (e.g., "Excellent", "Good", "Fair", "Needs Improvement") with a short justification.
+  - Keyword Match Rate: An estimated percentage (0-100) of how well the most critical keywords from the job description are present in the resume.
+  - Suggestions: Provide 2-3 highly specific, actionable suggestions to further improve the resume FOR THIS JOB. (e.g., "Consider adding a bullet point under Project Y detailing your experience with 'Java Spring Boot' as it's listed as essential.").
 
   **Input Data:**
 

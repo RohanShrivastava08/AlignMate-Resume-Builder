@@ -91,23 +91,24 @@ const prompt = ai.definePrompt({
   Do NOT output JSON. The resume should be ready to be copied and pasted into a text editor or a Word document.
 
   Key Objectives:
-  - ATS Optimization: Ensure the resume uses clear, standard formatting (headings, bullet points) that Applicant Tracking Systems can easily parse.
-  - Keyword Enhancement: While generating, subtly incorporate generally relevant keywords for professional roles.
-  - Impactful Language: Rewrite user-provided descriptions (especially for work experience and projects) to use strong action verbs, quantify achievements where possible, and highlight skills. Make it concise and compelling.
+  - ATS Optimization: Ensure the resume uses clear, standard formatting (headings, bullet points) that Applicant Tracking Systems can easily parse. Use common section headings.
+  - Keyword Enhancement: While generating, subtly incorporate generally relevant keywords for professional roles (e.g., "project management", "data analysis", "customer service", "software development" if applicable based on content).
+  - Impactful Language: Critically review and rewrite user-provided descriptions (especially for work experience and projects). Use strong action verbs (e.g., "Led", "Developed", "Managed", "Implemented", "Achieved"). Quantify achievements whenever possible (e.g., "Increased sales by 15%", "Reduced costs by 10%"). Highlight skills demonstrated. Make it concise and compelling. Avoid passive voice.
   - Professional Tone: Maintain a formal and professional tone throughout.
+  - Completeness: Ensure all provided sections are included in the output resume if they contain data.
 
   Output Format Guidelines:
   - Start with the Job Profile/Resume Heading if provided, centered or prominently displayed.
-  - Then list Personal Details: Name (prominently), followed by Email, Phone, and Location on one line. On the next line, list LinkedIn, GitHub, and Portfolio URLs if provided, clearly labeled (e.g., "LinkedIn: [url]").
+  - Then list Personal Details: Name (prominently), followed by Email, Phone, and Location on one line or logically grouped. On the next line, list LinkedIn, GitHub, and Portfolio URLs if provided, clearly labeled (e.g., "LinkedIn: [url]").
   - Follow with a 'SKILLS' section, listing skills clearly (e.g., comma-separated or bulleted list under a 'SKILLS' heading).
-  - Then, 'WORK EXPERIENCE' section. For each experience: Title and Company on one line, Dates (Start - End) on the next. For the Description, transform it into concise, achievement-oriented bullet points (starting with '-').
-  - Then, 'PROJECTS' section. For each project: Name. Transform the Description into bullet points highlighting skills used and outcomes. List Live Link and GitHub Link if provided.
+  - Then, 'WORK EXPERIENCE' section. For each experience: Title and Company on one line, Dates (Start - End) on the next. For the Description, transform it into concise, achievement-oriented bullet points (starting with '- ').
+  - Then, 'PROJECTS' section. For each project: Name. Transform the Description into bullet points highlighting skills used and outcomes. List Live Link and GitHub Link if provided, clearly labeled.
   - Then, 'EDUCATION' section. For each entry: Institution and Degree on one line, Dates (Start - End) on the next.
-  - If Volunteer Experience is provided, include a 'VOLUNTEER EXPERIENCE' section, formatted similarly to Work Experience.
-  - If Hobbies are provided, include a 'HOBBIES' section, listing them clearly.
+  - If Volunteer Experience is provided, include a 'VOLUNTEER EXPERIENCE' section, formatted similarly to Work Experience, focusing on transferable skills and impact.
+  - If Hobbies are provided, include a 'HOBBIES' section, listing them clearly (e.g., comma-separated).
   - Use clear uppercase headings for each section (e.g., "PERSONAL DETAILS", "SKILLS", "WORK EXPERIENCE", "PROJECTS", "EDUCATION", "VOLUNTEER EXPERIENCE", "HOBBIES").
-  - Use consistent formatting and ample line breaks for readability.
-  - If you cannot generate a meaningful resume from the input, output nothing.
+  - Use consistent formatting, bullet points for lists, and ample line breaks for readability.
+  - If you cannot generate a meaningful resume from the input (e.g., completely empty input), output nothing.
 
   Resume Data:
 
@@ -199,3 +200,4 @@ const generateResumeFlow = ai.defineFlow(
     return textOutput; // Returns a string
   }
 );
+
