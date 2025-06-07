@@ -35,7 +35,7 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
       data.personalDetails.email ? data.personalDetails.email.trim() : "",
       data.personalDetails.phone ? data.personalDetails.phone.trim() : "",
       data.personalDetails.location ? data.personalDetails.location.trim() : "",
-    ].filter(val => val !== "");
+    ].filter(val => val && val.trim() !== "");
     if (contactParts.length > 0) {
       preview += `${contactParts.join(" | ")}\n`;
     }
@@ -53,7 +53,7 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
     if (linkParts.length > 0) {
       preview += `${linkParts.join(" | ")}\n`;
     }
-    // Add a line break if personal details were added
+    // Add a line break if personal details were added and had content
     if ((data.personalDetails.name && data.personalDetails.name.trim()) || contactParts.length > 0 || linkParts.length > 0) {
         preview += "\n";
     }
@@ -72,7 +72,8 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
     preview += "WORK EXPERIENCE\n";
     preview += "--------------------\n";
     data.workExperience.forEach(exp => {
-      if (Object.values(exp).some(val => typeof val === 'string' && val.trim() !== "")) { // If any field in work exp is filled
+      const hasContent = Object.values(exp).some(val => typeof val === 'string' && val.trim() !== "");
+      if (hasContent) {
         let expHeaderParts = [];
         if (exp.title && exp.title.trim()) expHeaderParts.push(exp.title.trim().toUpperCase());
         if (exp.company && exp.company.trim()) expHeaderParts.push(`at ${exp.company.trim()}`);
@@ -86,7 +87,7 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
             if (line.trim()) preview += `- ${line.trim()}\n`;
           });
         }
-        preview += "\n"; // Add a blank line after each work experience entry
+        preview += "\n"; 
       }
     });
   }
@@ -97,24 +98,23 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
     preview += "PROJECTS\n";
     preview += "--------------------\n";
     data.projects.forEach(proj => {
-       if (Object.values(proj).some(val => typeof val === 'string' && val.trim() !== "")) { // If any field in project is filled
+       const hasContent = Object.values(proj).some(val => typeof val === 'string' && val.trim() !== "");
+       if (hasContent) {
         if (proj.name && proj.name.trim()) {
           preview += `${proj.name.trim().toUpperCase()}\n`;
         }
-        // Description
         if (proj.description && proj.description.trim()) {
            proj.description.trim().split('\n').forEach(line => {
             if (line.trim()) preview += `- ${line.trim()}\n`;
           });
         }
-        // Links
         if (proj.liveLink && proj.liveLink.trim()) {
-          preview += `Project Link: ${proj.liveLink.trim()}\n`;
+          preview += `Live Link: ${proj.liveLink.trim()}\n`;
         }
         if (proj.githubLink && proj.githubLink.trim()) {
           preview += `GitHub Link: ${proj.githubLink.trim()}\n`;
         }
-        preview += "\n"; // Add a blank line after each project entry
+        preview += "\n"; 
       }
     });
   }
@@ -125,7 +125,8 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
     preview += "EDUCATION\n";
     preview += "--------------------\n";
     data.education.forEach(edu => {
-      if (Object.values(edu).some(val => typeof val === 'string' && val.trim() !== "")) { // If any field in education is filled
+      const hasContent = Object.values(edu).some(val => typeof val === 'string' && val.trim() !== "");
+      if (hasContent) { 
         let eduHeaderParts = [];
         if (edu.degree && edu.degree.trim()) eduHeaderParts.push(edu.degree.trim());
         if (edu.institution && edu.institution.trim()) eduHeaderParts.push(edu.institution.trim());
@@ -134,18 +135,19 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
         if ((edu.startDate && edu.startDate.trim()) || (edu.endDate && edu.endDate.trim())) {
           preview += `${edu.startDate ? edu.startDate.trim() : "N/A"} - ${edu.endDate ? edu.endDate.trim() : "N/A"}\n`;
         }
-        preview += "\n"; // Add a blank line after each education entry
+        preview += "\n"; 
       }
     });
   }
   
   // Volunteer Experience
-  const hasVolunteerExperience = data.volunteerExperience && data.volunteerExperience.length > 0 && data.volunteerExperience.some(vol => Object.values(vol).some(val => typeof val === 'string' && val.trim() !== "" && val !== undefined));
+  const hasVolunteerExperience = data.volunteerExperience && data.volunteerExperience.length > 0 && data.volunteerExperience.some(vol => Object.values(vol).some(val => typeof val === 'string' && val && val.trim() !== ""));
   if (hasVolunteerExperience) {
     preview += "VOLUNTEER EXPERIENCE\n";
     preview += "--------------------\n";
     data.volunteerExperience.forEach(vol => {
-      if (Object.values(vol).some(val => typeof val === 'string' && val.trim() !== "" && val !== undefined )) {
+      const hasContent = Object.values(vol).some(val => typeof val === 'string' && val && val.trim() !== "");
+      if (hasContent) {
         let volHeaderParts = [];
         if (vol.role && vol.role.trim()) volHeaderParts.push(vol.role.trim().toUpperCase());
         if (vol.organization && vol.organization.trim()) volHeaderParts.push(`at ${vol.organization.trim()}`);
@@ -192,30 +194,28 @@ export function ResumeBuilder() {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
   useEffect(() => {
-    // Load job title and description from localStorage
     const savedJobTitle = localStorage.getItem("alignai_jobTitle");
     if (savedJobTitle) setJobTitle(savedJobTitle);
     const savedJobDescription = localStorage.getItem("alignai_jobDescription");
     if (savedJobDescription) setJobDescription(savedJobDescription);
     
-    // Clear pasted resume and generated resume on mount
     setPastedResume(""); 
     setGeneratedResume(""); 
   }, []);
 
   useEffect(() => {
-    if (jobTitle) { // Only save if jobTitle is not empty, to avoid saving initial empty state
+    if (jobTitle) { 
         localStorage.setItem("alignai_jobTitle", jobTitle);
     } else {
-        localStorage.removeItem("alignai_jobTitle"); // Remove if cleared
+        localStorage.removeItem("alignai_jobTitle"); 
     }
   }, [jobTitle]);
 
   useEffect(() => {
-    if (jobDescription) { // Only save if jobDescription is not empty
+    if (jobDescription) { 
         localStorage.setItem("alignai_jobDescription", jobDescription);
     } else {
-        localStorage.removeItem("alignai_jobDescription"); // Remove if cleared
+        localStorage.removeItem("alignai_jobDescription"); 
     }
   }, [jobDescription]);
 
@@ -321,11 +321,9 @@ export function ResumeBuilder() {
       if (pastedResume === "") {
         setGeneratedResume(""); 
       } else {
-        // When pasting, the pasted content itself is the preview until optimized.
         setGeneratedResume(pastedResume); 
       }
     }
-    // For 'form' mode, live updates are handled by `handleFormUpdate`
   }, [inputMode, pastedResume]);
 
 
@@ -356,7 +354,7 @@ export function ResumeBuilder() {
                   value={pastedResume}
                   onChange={(e) => {
                     setPastedResume(e.target.value);
-                    if (inputMode === 'paste') { // Update preview if in paste mode
+                    if (inputMode === 'paste') { 
                         setGeneratedResume(e.target.value);
                     }
                   }}
