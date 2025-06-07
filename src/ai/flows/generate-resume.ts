@@ -36,6 +36,8 @@ const WorkExperienceSchema = z.object({
 const ProjectSchema = z.object({
   name: z.string().describe('The name of the project.'),
   description: z.string().describe('A description of the project and its outcomes.'),
+  liveLink: z.string().optional().describe('A live URL for the project.'),
+  githubLink: z.string().optional().describe('A GitHub URL for the project.'),
 });
 
 const EducationSchema = z.object({
@@ -83,65 +85,99 @@ export async function generateResume(input: GenerateResumeInput): Promise<Genera
 const prompt = ai.definePrompt({
   name: 'generateResumePrompt',
   input: {schema: GenerateResumeInputSchema},
-  output: {schema: NullableGenerateResumeOutputSchema}, // Use nullable schema for prompt output
-  prompt: `You are an expert resume writer. You will generate a professional, grammatically correct, ATS-optimized resume in plain text format from the provided information. If you cannot generate a resume from the input, output nothing.
+  output: {schema: NullableGenerateResumeOutputSchema},
+  prompt: `You are an expert resume writer. Transform the following structured information into a professional, grammatically correct, ATS-optimized resume in PLAIN TEXT format.
+  Do NOT output JSON. The resume should be ready to be copied and pasted into a text editor (like Notepad) or a Word document.
 
-  Personal Details:
+  Output Format Guidelines:
+  - Start with the Job Profile/Resume Heading if provided.
+  - Then list Personal Details (Name, Email, Phone, Location, LinkedIn, GitHub).
+  - Follow with a 'Skills' section, listing skills clearly (e.g., comma-separated or bulleted list under a 'Skills' heading).
+  - Then, 'Work Experience' section. For each experience: Title, Company, Dates (Start - End), and a Description (use bullet points for responsibilities/achievements).
+  - Then, 'Projects' section. For each project: Name, Description (use bullet points), Live Link (if provided), GitHub Link (if provided).
+  - Then, 'Education' section. For each entry: Institution, Degree, Dates (Start - End).
+  - If Volunteer Experience is provided, include an 'Volunteer Experience' section similar to Work Experience.
+  - If Hobbies are provided, include a 'Hobbies' section, listing them clearly.
+  - Use clear headings for each section (e.g., "PERSONAL DETAILS", "SKILLS", "WORK EXPERIENCE", "PROJECTS", "EDUCATION", "VOLUNTEER EXPERIENCE", "HOBBIES").
+  - Use consistent formatting and ample line breaks for readability.
+  - If you cannot generate a meaningful resume from the input, output nothing.
+
+  Resume Data:
+
+  {{#if jobProfile}}
+  {{{jobProfile}}}
+  --------------------
+  {{/if}}
+
+  PERSONAL DETAILS
+  --------------------
   Name: {{{personalDetails.name}}}
   Email: {{{personalDetails.email}}}
   Phone: {{{personalDetails.phone}}}
-  LinkedIn: {{{personalDetails.linkedin}}}
-  GitHub: {{{personalDetails.github}}}
   Location: {{{personalDetails.location}}}
+  {{#if personalDetails.linkedin}}LinkedIn: {{{personalDetails.linkedin}}}{{/if}}
+  {{#if personalDetails.github}}GitHub: {{{personalDetails.github}}}{{/if}}
 
-  {{#if jobProfile}}
-  Job Profile: {{{jobProfile}}}
-  {{/if}}
+  SKILLS
+  --------------------
+  {{#each skills}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
 
-  Skills:
-  {{#each skills}}
-  - {{{this}}}
-  {{/each}}
-
-  Work Experience:
+  WORK EXPERIENCE
+  --------------------
   {{#each workExperience}}
   Title: {{{this.title}}}
   Company: {{{this.company}}}
-  Start Date: {{{this.startDate}}}
-  End Date: {{{this.endDate}}}
-  Description: {{{this.description}}}
+  Dates: {{{this.startDate}}} - {{{this.endDate}}}
+  Description:
+  {{{this.description}}} (Consider formatting this as bullet points, e.g. by starting lines with "- ")
+  {{#unless @last}}
+
+  {{/unless}}
   {{/each}}
 
-  Projects:
+  PROJECTS
+  --------------------
   {{#each projects}}
-  Name: {{{this.name}}}
-  Description: {{{this.description}}}
+  Project: {{{this.name}}}
+  Description:
+  {{{this.description}}} (Consider formatting this as bullet points)
+  {{#if this.liveLink}}Live Link: {{{this.liveLink}}}{{/if}}
+  {{#if this.githubLink}}GitHub Link: {{{this.githubLink}}}{{/if}}
+  {{#unless @last}}
+
+  {{/unless}}
   {{/each}}
 
-  Education:
+  EDUCATION
+  --------------------
   {{#each education}}
   Institution: {{{this.institution}}}
   Degree: {{{this.degree}}}
-  Start Date: {{{this.startDate}}}
-  End Date: {{{this.endDate}}}
+  Dates: {{{this.startDate}}} - {{{this.endDate}}}
+  {{#unless @last}}
+
+  {{/unless}}
   {{/each}}
 
   {{#if volunteerExperience}}
-  Volunteer Experience:
+  VOLUNTEER EXPERIENCE
+  --------------------
   {{#each volunteerExperience}}
   Organization: {{{this.organization}}}
   Role: {{{this.role}}}
-  Start Date: {{{this.startDate}}}
-  End Date: {{{this.endDate}}}
-  Description: {{{this.description}}}
+  Dates: {{{this.startDate}}} - {{{this.endDate}}}
+  Description:
+  {{{this.description}}} (Consider formatting this as bullet points)
+  {{#unless @last}}
+
+  {{/unless}}
   {{/each}}
   {{/if}}
 
   {{#if hobbies}}
-  Hobbies:
-  {{#each hobbies}}
-  - {{{this}}}
-  {{/each}}
+  HOBBIES
+  --------------------
+  {{#each hobbies}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
   {{/if}}
   `,
 });

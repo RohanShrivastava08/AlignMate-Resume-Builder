@@ -1,19 +1,22 @@
+
 "use client";
 
 import type { UseFormReturn } from "react-hook-form";
-import type { GenerateResumeInput } from "@/ai/flows/generate-resume";
+import type { GenerateResumeFormValues } from "@/lib/zod-schemas"; // Corrected import
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrayFieldForm } from "./ArrayFieldForm";
 
 interface ProjectsFormProps {
-  form: UseFormReturn<GenerateResumeInput>;
+  form: UseFormReturn<GenerateResumeFormValues>; // Corrected type
 }
 
 const defaultProject = {
   name: "",
   description: "",
+  liveLink: "",
+  githubLink: "",
 };
 
 export function ProjectsForm({ form }: ProjectsFormProps) {
@@ -55,6 +58,34 @@ export function ProjectsForm({ form }: ProjectsFormProps) {
               </FormItem>
             )}
           />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name={`projects.${index}.liveLink`}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Live Link (Optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., https://myproject.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name={`projects.${index}.githubLink`}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>GitHub Link (Optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., https://github.com/user/project" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
       )}
     />

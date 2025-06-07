@@ -1,7 +1,8 @@
+
 "use client";
 
 import type { UseFormReturn } from "react-hook-form";
-import type { GenerateResumeInput } from "@/ai/flows/generate-resume";
+import type { GenerateResumeFormValues } from "@/lib/zod-schemas";
 import {
   FormControl,
   FormField,
@@ -12,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 interface PersonalDetailsFormProps {
-  form: UseFormReturn<GenerateResumeInput>;
+  form: UseFormReturn<GenerateResumeFormValues>;
 }
 
 export function PersonalDetailsForm({ form }: PersonalDetailsFormProps) {

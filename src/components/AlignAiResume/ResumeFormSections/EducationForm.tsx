@@ -1,13 +1,14 @@
+
 "use client";
 
 import type { UseFormReturn } from "react-hook-form";
-import type { GenerateResumeInput } from "@/ai/flows/generate-resume";
+import type { GenerateResumeFormValues } from "@/lib/zod-schemas";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ArrayFieldForm } from "./ArrayFieldForm";
 
 interface EducationFormProps {
-  form: UseFormReturn<GenerateResumeInput>;
+  form: UseFormReturn<GenerateResumeFormValues>;
 }
 
 const defaultEducation = {

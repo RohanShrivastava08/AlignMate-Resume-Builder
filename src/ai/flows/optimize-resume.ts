@@ -1,3 +1,4 @@
+
 // src/ai/flows/optimize-resume.ts
 'use server';
 /**
@@ -29,7 +30,16 @@ const prompt = ai.definePrompt({
   name: 'optimizeResumePrompt',
   input: {schema: OptimizeResumeInputSchema},
   output: {schema: OptimizeResumeOutputSchema},
-  prompt: `You are an expert resume writer. Please optimize the following resume text to be ATS-friendly, well-formatted, and use strong action verbs, quantified results, and industry-relevant keywords.\n\nResume Text: {{{resumeText}}}`,
+  prompt: `You are an expert resume writer. Please reformat and optimize the following resume text.
+The output MUST be a clean, well-structured PLAIN TEXT resume, ATS-friendly, and suitable for copy-pasting directly into job applications or a text editor.
+Ensure consistent headings for sections (e.g., "SUMMARY", "EXPERIENCE", "EDUCATION", "SKILLS", "PROJECTS").
+Use bullet points (e.g., starting lines with '-' or '*') for achievements, responsibilities, and project details.
+Maintain professional formatting with clear separation between sections and entries.
+Focus on using strong action verbs, quantified results, and industry-relevant keywords.
+If the input resume is messy or poorly structured, create a new, clean layout based on its content. Do not replicate poor formatting.
+
+Resume Text to Optimize and Reformat:
+{{{resumeText}}}`,
 });
 
 const optimizeResumeFlow = ai.defineFlow(

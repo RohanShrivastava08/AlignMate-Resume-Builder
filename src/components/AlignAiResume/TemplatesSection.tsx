@@ -1,10 +1,11 @@
+
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 
 const templates = [
-  { name: "Modern Professional", imgSrc: "https://placehold.co/300x400.png", hint: "resume template" },
-  { name: "Creative Minimalist", imgSrc: "https://placehold.co/300x400.png", hint: "resume design" },
-  { name: "Classic ATS-Friendly", imgSrc: "https://placehold.co/300x400.png", hint: "ATS resume" },
+  { name: "Modern Professional", imgSrc: "https://placehold.co/300x400.png", hint: "ATS resume modern" },
+  { name: "Creative Minimalist", imgSrc: "https://placehold.co/300x400.png", hint: "ATS resume creative" },
+  { name: "Classic ATS-Friendly", imgSrc: "https://placehold.co/300x400.png", hint: "ATS resume classic" },
 ];
 
 export function TemplatesSection() {
@@ -19,9 +20,9 @@ export function TemplatesSection() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {templates.map((template) => (
-            <Card key={template.name} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <Card key={template.name} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group">
               <CardContent className="p-0">
-                <div className="aspect-[3/4] relative w-full">
+                <div className="aspect-[3/4] relative w-full overflow-hidden">
                   <Image
                     src={template.imgSrc}
                     alt={template.name}

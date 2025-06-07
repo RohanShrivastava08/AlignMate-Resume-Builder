@@ -1,3 +1,4 @@
+
 import { z } from "zod";
 
 export const PersonalDetailsSchema = z.object({
@@ -24,6 +25,8 @@ export const WorkExperienceSchema = z.object({
 export const ProjectSchema = z.object({
   name: z.string().min(1, "Project name is required."),
   description: z.string().min(1, "Description is required."),
+  liveLink: z.string().url("Invalid URL for live link.").optional().or(z.literal('')),
+  githubLink: z.string().url("Invalid URL for GitHub link.").optional().or(z.literal('')),
 });
 
 export const EducationSchema = z.object({
@@ -70,7 +73,7 @@ export const initialResumeData: GenerateResumeFormValues = {
   workExperience: [
     { title: "", company: "", startDate: "", endDate: "", description: "" },
   ],
-  projects: [{ name: "", description: "" }],
+  projects: [{ name: "", description: "", liveLink: "", githubLink: "" }],
   education: [
     { institution: "", degree: "", startDate: "", endDate: "" },
   ],

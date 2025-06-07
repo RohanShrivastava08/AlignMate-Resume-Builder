@@ -1,12 +1,13 @@
+
 "use client";
 
 import type { UseFormReturn } from "react-hook-form";
-import type { GenerateResumeInput } from "@/ai/flows/generate-resume";
+import type { GenerateResumeFormValues } from "@/lib/zod-schemas";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 
 interface SkillsFormProps {
-  form: UseFormReturn<GenerateResumeInput>;
+  form: UseFormReturn<GenerateResumeFormValues>;
 }
 
 export function SkillsForm({ form }: SkillsFormProps) {
