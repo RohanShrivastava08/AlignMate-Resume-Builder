@@ -27,17 +27,18 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
   }
 
   // Personal Details
+  let personalDetailsContent = "";
   if (data.personalDetails) {
     if (data.personalDetails.name && data.personalDetails.name.trim() !== "") {
-      preview += `${data.personalDetails.name.trim().toUpperCase()}\n`;
+      personalDetailsContent += `${data.personalDetails.name.trim().toUpperCase()}\n`;
     }
-    const contactParts = [
+    const contactPartsInternal = [
       data.personalDetails.email ? data.personalDetails.email.trim() : "",
       data.personalDetails.phone ? data.personalDetails.phone.trim() : "",
       data.personalDetails.location ? data.personalDetails.location.trim() : "",
     ].filter(val => val && val.trim() !== "");
-    if (contactParts.length > 0) {
-      preview += `${contactParts.join(" | ")}\n`;
+    if (contactPartsInternal.length > 0) {
+      personalDetailsContent += `${contactPartsInternal.join(" | ")}\n`;
     }
     
     const linkParts = [];
@@ -51,13 +52,13 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
       linkParts.push(`💼 Portfolio: ${data.personalDetails.portfolio.trim()}`);
     }
     if (linkParts.length > 0) {
-      preview += `${linkParts.join(" | ")}\n`;
-    }
-    // Add a line break if personal details were added and had content
-    if ((data.personalDetails.name && data.personalDetails.name.trim()) || contactParts.length > 0 || linkParts.length > 0) {
-        preview += "\n";
+      personalDetailsContent += `${linkParts.join(" | ")}\n`;
     }
   }
+  if (personalDetailsContent.trim() !== "") {
+    preview += personalDetailsContent + "\n"; 
+  }
+
 
   // Skills
   if (data.skills && data.skills.length > 0 && data.skills.some(skill => skill && skill.trim() !== "")) {
@@ -211,13 +212,12 @@ export function ResumeBuilder() {
   const [reviewData, setReviewData] = useState<TailorResumeOutput["review"] | null>(null);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
- useEffect(() => {
+  useEffect(() => {
     const savedJobTitle = localStorage.getItem("alignai_jobTitle");
     if (savedJobTitle) setJobTitle(savedJobTitle);
     const savedJobDescription = localStorage.getItem("alignai_jobDescription");
     if (savedJobDescription) setJobDescription(savedJobDescription);
     
-    // Clear resume related states on mount/refresh
     setPastedResume(""); 
     setGeneratedResume(""); 
   }, []);
@@ -337,8 +337,6 @@ export function ResumeBuilder() {
   };
   
    useEffect(() => {
-    // When switching to 'paste' mode, if pastedResume is empty, clear generatedResume.
-    // Otherwise, set generatedResume to pastedResume.
     if (inputMode === 'paste') {
       if (pastedResume.trim() === "") {
         setGeneratedResume(""); 
@@ -346,9 +344,6 @@ export function ResumeBuilder() {
         setGeneratedResume(pastedResume); 
       }
     }
-    // If switching to 'form' mode, the live preview is handled by onFormUpdate.
-    // If there's existing form data, it will repopulate the preview.
-    // If the form is empty, the preview will be empty.
   }, [inputMode, pastedResume]);
 
 
@@ -358,11 +353,9 @@ export function ResumeBuilder() {
         <Tabs value={inputMode} onValueChange={(value) => {
             const newMode = value as "paste" | "form";
             setInputMode(newMode);
-            // If switching to form mode, and the form is empty, clear the generated resume.
-            // The ResumeForm's useEffect will trigger onFormUpdate which will then populate the preview.
             if (newMode === 'form') {
                  // Let ResumeForm's onFormUpdate handle the preview based on current form state
-            } else { // Switching to paste mode
+            } else { 
                 if (pastedResume.trim() === "") {
                     setGeneratedResume("");
                 } else {
