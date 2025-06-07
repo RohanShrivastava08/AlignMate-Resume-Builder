@@ -35,26 +35,29 @@ export function ResumeForm({ onResumeGenerated, setIsLoading, isLoading, onFormU
   const form = useForm<GenerateResumeFormValues>({
     resolver: zodResolver(GenerateResumeFormSchema),
     defaultValues: initialResumeData,
-    mode: "onChange", // Important for live updates
+    mode: "onChange", 
   });
 
   const watchedValues = form.watch();
+  // Create a stable string representation of watchedValues for useEffect dependency
+  const watchedValuesString = JSON.stringify(watchedValues);
 
   useEffect(() => {
+    // Pass the actual object, not the stringified version
     onFormUpdate(watchedValues);
-  }, [watchedValues, onFormUpdate]);
+  }, [watchedValuesString, onFormUpdate]); // Depend on the stringified version and onFormUpdate
 
   const onSubmit = async (values: GenerateResumeFormValues) => {
     setIsLoading(true);
     try {
-      // Ensure optional fields are correctly handled (empty arrays if not filled)
       const apiValues: GenerateResumeInput = {
         ...values,
-        // Ensure empty arrays are passed if fields are cleared, or undefined if they should be omitted by Zod
-        volunteerExperience: values.volunteerExperience && values.volunteerExperience.length > 0 && values.volunteerExperience.some(v => v.organization)
-          ? values.volunteerExperience
+        volunteerExperience: values.volunteerExperience && values.volunteerExperience.length > 0 && values.volunteerExperience.some(v => v.organization || v.role || v.startDate || v.endDate || v.description)
+          ? values.volunteerExperience.filter(v => v.organization || v.role || v.startDate || v.endDate || v.description)
           : undefined,
-        hobbies: values.hobbies && values.hobbies.length > 0 ? values.hobbies : undefined,
+        hobbies: values.hobbies && values.hobbies.length > 0 && values.hobbies.some(h => h && h.trim() !== "")
+          ? values.hobbies.filter(h => h && h.trim() !== "")
+          : undefined,
       };
       const result = await generateResume(apiValues);
       onResumeGenerated(result);
@@ -130,4 +133,3 @@ export function ResumeForm({ onResumeGenerated, setIsLoading, isLoading, onFormU
     </Card>
   );
 }
-
