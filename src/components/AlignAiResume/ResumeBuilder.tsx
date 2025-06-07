@@ -15,19 +15,21 @@ import { ResumeReviewModal } from "./ResumeReviewModal";
 import { useToast } from "@/hooks/use-toast";
 import { Download, Copy, Loader2, FileSearch2 } from "lucide-react";
 import type { GenerateResumeFormValues } from "@/lib/zod-schemas";
+import { initialResumeData } from "@/lib/zod-schemas";
 
 
 // Helper function to generate a modern plain text preview from form data
 const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string => {
   if (!data) return "";
   let preview = "";
+  let personalDetailsContent = "";
 
   // Job Profile / Resume Heading
   if (data.jobProfile && data.jobProfile.trim() !== "") {
     preview += `${data.jobProfile.trim().toUpperCase()}\n\n`;
   }
   
-  let personalDetailsContent = "";
+  // Personal Details
   if (data.personalDetails) {
     if (data.personalDetails.name && data.personalDetails.name.trim() !== "") {
       personalDetailsContent += `${data.personalDetails.name.trim().toUpperCase()}\n`;
@@ -52,6 +54,7 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
     if (data.personalDetails.portfolio && data.personalDetails.portfolio.trim() !== "") {
       linkParts.push(`💼 Portfolio: ${data.personalDetails.portfolio.trim()}`);
     }
+
     if (linkParts.length > 0) {
       personalDetailsContent += `${linkParts.join(" | ")}\n`;
     }
@@ -60,7 +63,6 @@ const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string
   if (personalDetailsContent.trim() !== "") {
     preview += personalDetailsContent + "\n"; 
   }
-
 
   // Skills
   if (data.skills && data.skills.length > 0 && data.skills.some(skill => skill && skill.trim() !== "")) {
@@ -205,6 +207,7 @@ export function ResumeBuilder() {
   const [jobTitle, setJobTitle] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [generatedResume, setGeneratedResume] = useState("");
+  const [formValuesForPreview, setFormValuesForPreview] = useState<GenerateResumeFormValues | null>(initialResumeData);
   
   const [isLoadingOptimize, setIsLoadingOptimize] = useState(false);
   const [isLoadingGenerate, setIsLoadingGenerate] = useState(false);
@@ -220,6 +223,7 @@ export function ResumeBuilder() {
     // Clear pasted resume and generated resume on initial load/refresh
     setPastedResume(""); 
     setGeneratedResume(""); 
+    setFormValuesForPreview(initialResumeData); // Reset form preview data too
 
     const savedJobTitle = localStorage.getItem("alignai_jobTitle");
     if (savedJobTitle) setJobTitle(savedJobTitle);
@@ -245,6 +249,7 @@ export function ResumeBuilder() {
   }, [jobDescription]);
 
   const handleFormUpdate = useCallback((formData: GenerateResumeFormValues) => {
+    setFormValuesForPreview(formData); // Update form values for preview
     if (inputMode === "form") {
       const plainTextPreview = generatePlainTextPreview(formData);
       setGeneratedResume(plainTextPreview);
@@ -348,8 +353,11 @@ export function ResumeBuilder() {
       } else {
         setGeneratedResume(pastedResume); 
       }
+    } else { // inputMode === 'form'
+        const plainTextPreview = generatePlainTextPreview(formValuesForPreview);
+        setGeneratedResume(plainTextPreview);
     }
-  }, [inputMode, pastedResume]);
+  }, [inputMode, pastedResume, formValuesForPreview]);
 
 
   return (
@@ -358,25 +366,6 @@ export function ResumeBuilder() {
         <Tabs value={inputMode} onValueChange={(value) => {
             const newMode = value as "paste" | "form";
             setInputMode(newMode);
-            if (newMode === 'form') {
-                // Trigger form update to refresh preview based on current form state
-                const currentFormData = (document.querySelector('form') as HTMLFormElement) 
-                                      ? new FormData(document.querySelector('form') as HTMLFormElement) 
-                                      : null;
-                if (currentFormData) {
-                    // This is a simplified way to get current form values;
-                    // Ideally, ResumeForm would expose its current values or a re-trigger mechanism
-                    // For now, we rely on onFormUpdate being called by ResumeForm on its own changes.
-                } else {
-                   setGeneratedResume(generatePlainTextPreview(null)); // Or use initialResumeData if preferred
-                }
-            } else { 
-                if (pastedResume.trim() === "") {
-                    setGeneratedResume("");
-                } else {
-                    setGeneratedResume(pastedResume);
-                }
-            }
         }} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="form">Build with Form</TabsTrigger>
@@ -401,9 +390,6 @@ export function ResumeBuilder() {
                   value={pastedResume}
                   onChange={(e) => {
                     setPastedResume(e.target.value);
-                    if (inputMode === 'paste') { 
-                        setGeneratedResume(e.target.value);
-                    }
                   }}
                   rows={15}
                   className="min-h-[300px]"
@@ -476,7 +462,7 @@ export function ResumeBuilder() {
             disabled={isLoadingReview || !generatedResume.trim() || !jobDescription.trim()}
           >
             {isLoadingReview ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileSearch2 className="mr-2 h-4 w-4" />}
-            Get AI Review
+            ATS Checker
           </Button>
         </div>
       </div>
@@ -489,3 +475,4 @@ export function ResumeBuilder() {
     </div>
   );
 }
+
