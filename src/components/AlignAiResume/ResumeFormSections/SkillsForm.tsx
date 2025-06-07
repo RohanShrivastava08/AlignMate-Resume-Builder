@@ -20,7 +20,7 @@ export function SkillsForm({ form }: SkillsFormProps) {
           <FormLabel>Skills</FormLabel>
           <FormControl>
             <Textarea
-              placeholder="Enter skills separated by COMMA (e.g., JavaScript, React, Node.js, Python, SQL)"
+              placeholder="Enter skills separated by COMMA (e.g., JavaScript, React, Node.js)"
               {...field}
               onChange={(e) => {
                 // Convert comma-separated string to array of strings for the form state
@@ -39,3 +39,4 @@ export function SkillsForm({ form }: SkillsFormProps) {
   );
 }
 
+    

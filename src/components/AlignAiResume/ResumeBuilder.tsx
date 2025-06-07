@@ -16,105 +16,141 @@ import { useToast } from "@/hooks/use-toast";
 import { Download, Copy, Loader2, FileSearch2 } from "lucide-react";
 import type { GenerateResumeFormValues } from "@/lib/zod-schemas";
 
-// Helper function to generate a basic plain text preview from form data
+// Helper function to generate a modern plain text preview from form data
 const generatePlainTextPreview = (data: GenerateResumeFormValues | null): string => {
   if (!data) return "";
   let preview = "";
 
   if (data.jobProfile) {
-    preview += `${data.jobProfile}\n--------------------\n\n`;
+    preview += `${data.jobProfile.toUpperCase()}\n\n`;
   }
 
-  preview += "PERSONAL DETAILS\n--------------------\n";
-  preview += `Name: ${data.personalDetails?.name || ""}\n`;
-  preview += `Email: ${data.personalDetails?.email || ""}\n`;
-  preview += `Phone: ${data.personalDetails?.phone || ""}\n`;
-  preview += `Location: ${data.personalDetails?.location || ""}\n`;
-  if (data.personalDetails?.linkedin) preview += `LinkedIn: ${data.personalDetails.linkedin}\n`;
-  if (data.personalDetails?.github) preview += `GitHub: ${data.personalDetails.github}\n`;
-  preview += "\n";
+  if (data.personalDetails) {
+    if (data.personalDetails.name) {
+      preview += `${data.personalDetails.name.toUpperCase()}\n`;
+    }
+    const contactParts = [
+      data.personalDetails.email,
+      data.personalDetails.phone,
+      data.personalDetails.location,
+    ].filter(Boolean);
+    if (contactParts.length > 0) {
+      preview += `${contactParts.join(" | ")}\n`;
+    }
+    if (data.personalDetails.linkedin) {
+      preview += `${data.personalDetails.linkedin}\n`;
+    }
+    if (data.personalDetails.github) {
+      preview += `${data.personalDetails.github}\n`;
+    }
+    preview += "\n";
+  }
 
-  preview += "SKILLS\n--------------------\n";
-  preview += `${data.skills?.join(", ") || ""}\n\n`;
+  if (data.skills && data.skills.length > 0) {
+    preview += "SKILLS\n";
+    preview += "--------------------\n";
+    preview += `${data.skills.join(", ")}\n\n`;
+  }
 
-  if (data.workExperience && data.workExperience.length > 0) {
-    let contentAdded = false;
-    let sectionText = "WORK EXPERIENCE\n--------------------\n";
+
+  if (data.workExperience && data.workExperience.length > 0 && data.workExperience.some(exp => Object.values(exp).some(val => !!val))) {
+    preview += "WORK EXPERIENCE\n";
+    preview += "--------------------\n";
     data.workExperience.forEach(exp => {
-      if (exp.title || exp.company || exp.startDate || exp.endDate || exp.description) {
-        contentAdded = true;
-        sectionText += `Title: ${exp.title || ""}\n`;
-        sectionText += `Company: ${exp.company || ""}\n`;
-        sectionText += `Dates: ${exp.startDate || ""} - ${exp.endDate || ""}\n`;
-        sectionText += `Description:\n${exp.description || ""}\n\n`;
+      if (Object.values(exp).some(val => !!val)) {
+        if (exp.title && exp.company) {
+          preview += `${exp.title.toUpperCase()} at ${exp.company}\n`;
+        } else if (exp.title) {
+          preview += `${exp.title.toUpperCase()}\n`;
+        } else if (exp.company) {
+          preview += `${exp.company}\n`;
+        }
+        if (exp.startDate || exp.endDate) {
+          preview += `${exp.startDate || ""} - ${exp.endDate || ""}\n`;
+        }
+        if (exp.description) {
+          exp.description.split('\n').forEach(line => {
+            if (line.trim()) preview += `- ${line.trim()}\n`;
+          });
+        }
+        preview += "\n";
       }
     });
-    if (contentAdded) preview += sectionText;
-    else if (data.workExperience.some(exp => Object.values(exp).some(val => val === ""))) { // show header if array exists but all items are empty initially
-        preview += "WORK EXPERIENCE\n--------------------\n\n";
-    }
   }
 
 
-  if (data.projects && data.projects.length > 0) {
-    let contentAdded = false;
-    let sectionText = "PROJECTS\n--------------------\n";
+  if (data.projects && data.projects.length > 0 && data.projects.some(proj => Object.values(proj).some(val => !!val))) {
+    preview += "PROJECTS\n";
+    preview += "--------------------\n";
     data.projects.forEach(proj => {
-      if (proj.name || proj.description || proj.liveLink || proj.githubLink) {
-        contentAdded = true;
-        sectionText += `Project: ${proj.name || ""}\n`;
-        sectionText += `Description:\n${proj.description || ""}\n`;
-        if (proj.liveLink) sectionText += `Live Link: ${proj.liveLink}\n`;
-        if (proj.githubLink) sectionText += `GitHub Link: ${proj.githubLink}\n`;
-        sectionText += "\n";
+       if (Object.values(proj).some(val => !!val)) {
+        if (proj.name) {
+          preview += `${proj.name.toUpperCase()}\n`;
+        }
+        const links = [proj.liveLink, proj.githubLink].filter(Boolean);
+        if (links.length > 0) {
+          preview += `Links: ${links.join(" | ")}\n`;
+        }
+        if (proj.description) {
+           proj.description.split('\n').forEach(line => {
+            if (line.trim()) preview += `- ${line.trim()}\n`;
+          });
+        }
+        preview += "\n";
       }
     });
-    if (contentAdded) preview += sectionText;
-    else if (data.projects.some(proj => Object.values(proj).some(val => val === ""))) {
-         preview += "PROJECTS\n--------------------\n\n";
-    }
   }
 
 
-  if (data.education && data.education.length > 0) {
-    let contentAdded = false;
-    let sectionText = "EDUCATION\n--------------------\n";
+  if (data.education && data.education.length > 0 && data.education.some(edu => Object.values(edu).some(val => !!val))) {
+    preview += "EDUCATION\n";
+    preview += "--------------------\n";
     data.education.forEach(edu => {
-      if (edu.institution || edu.degree || edu.startDate || edu.endDate) {
-        contentAdded = true;
-        sectionText += `Institution: ${edu.institution || ""}\n`;
-        sectionText += `Degree: ${edu.degree || ""}\n`;
-        sectionText += `Dates: ${edu.startDate || ""} - ${edu.endDate || ""}\n\n`;
+      if (Object.values(edu).some(val => !!val)) {
+        if (edu.degree && edu.institution) {
+          preview += `${edu.degree}, ${edu.institution}\n`;
+        } else if (edu.degree) {
+          preview += `${edu.degree}\n`;
+        } else if (edu.institution) {
+          preview += `${edu.institution}\n`;
+        }
+        if (edu.startDate || edu.endDate) {
+          preview += `${edu.startDate || ""} - ${edu.endDate || ""}\n`;
+        }
+        preview += "\n";
       }
     });
-    if (contentAdded) preview += sectionText;
-     else if (data.education.some(edu => Object.values(edu).some(val => val === ""))) {
-        preview += "EDUCATION\n--------------------\n\n";
-    }
   }
 
-
-  if (data.volunteerExperience && data.volunteerExperience.length > 0) {
-    let contentAdded = false;
-    let sectionText = "VOLUNTEER EXPERIENCE\n--------------------\n";
+  if (data.volunteerExperience && data.volunteerExperience.length > 0 && data.volunteerExperience.some(vol => Object.values(vol).some(val => !!val))) {
+    preview += "VOLUNTEER EXPERIENCE\n";
+    preview += "--------------------\n";
     data.volunteerExperience.forEach(vol => {
-       if (vol.organization || vol.role || vol.startDate || vol.endDate || vol.description) {
-        contentAdded = true;
-        sectionText += `Organization: ${vol.organization || ""}\n`;
-        sectionText += `Role: ${vol.role || ""}\n`;
-        sectionText += `Dates: ${vol.startDate || ""} - ${vol.endDate || ""}\n`;
-        sectionText += `Description:\n${vol.description || ""}\n\n`;
+      if (Object.values(vol).some(val => !!val)) {
+        if (vol.role && vol.organization) {
+          preview += `${vol.role.toUpperCase()} at ${vol.organization}\n`;
+        } else if (vol.role) {
+          preview += `${vol.role.toUpperCase()}\n`;
+        } else if (vol.organization) {
+          preview += `${vol.organization}\n`;
+        }
+        if (vol.startDate || vol.endDate) {
+          preview += `${vol.startDate || ""} - ${vol.endDate || ""}\n`;
+        }
+        if (vol.description) {
+           vol.description.split('\n').forEach(line => {
+            if (line.trim()) preview += `- ${line.trim()}\n`;
+          });
+        }
+        preview += "\n";
       }
     });
-    if (contentAdded) preview += sectionText;
-    else if (data.volunteerExperience.some(vol => Object.values(vol).some(val => val === ""))) {
-        preview += "VOLUNTEER EXPERIENCE\n--------------------\n\n";
-    }
   }
 
   if (data.hobbies && data.hobbies.length > 0) {
-    preview += "HOBBIES\n--------------------\n";
-    preview += `${data.hobbies.join(", ") || ""}\n\n`;
+    preview += "HOBBIES\n";
+    preview += "--------------------\n";
+    preview += `${data.hobbies.join(", ")}\n\n`;
   }
 
   return preview.trim();
@@ -142,9 +178,9 @@ export function ResumeBuilder() {
     if (savedJobTitle) setJobTitle(savedJobTitle);
     const savedJobDescription = localStorage.getItem("alignai_jobDescription");
     if (savedJobDescription) setJobDescription(savedJobDescription);
-    // Clear pastedResume and generatedResume on mount to ensure they are blank on refresh
-    setPastedResume("");
-    setGeneratedResume(""); 
+    
+    setPastedResume(""); // Clear pasted resume on mount
+    setGeneratedResume(""); // Clear generated/previewed resume on mount
   }, []);
 
   useEffect(() => {
@@ -254,15 +290,12 @@ export function ResumeBuilder() {
    useEffect(() => {
     if (inputMode === 'paste') {
       if (pastedResume === "") {
-        setGeneratedResume("");
+        setGeneratedResume(""); // Clear preview if pasted resume is cleared
       } else {
-        setGeneratedResume(pastedResume); 
+        setGeneratedResume(pastedResume); // Show pasted resume in preview
       }
-    } else if (inputMode === 'form') {
-        // When switching to form mode, ResumeForm's onFormUpdate will be called
-        // with current (possibly initial) form data, which populates the preview.
-        // No explicit action needed here for generatedResume, as handleFormUpdate covers it.
     }
+    // For 'form' mode, handleFormUpdate takes care of updating generatedResume.
   }, [inputMode, pastedResume, handleFormUpdate]);
 
 
@@ -279,7 +312,7 @@ export function ResumeBuilder() {
               onResumeGenerated={setGeneratedResume} 
               setIsLoading={setIsLoadingGenerate}
               isLoading={isLoadingGenerate}
-              onFormUpdate={handleFormUpdate}
+              onFormUpdate={handleFormUpdate} // This enables live preview
             />
           </TabsContent>
           <TabsContent value="paste" className="mt-6">
@@ -293,7 +326,7 @@ export function ResumeBuilder() {
                   value={pastedResume}
                   onChange={(e) => {
                     setPastedResume(e.target.value);
-                    if (inputMode === 'paste') {
+                    if (inputMode === 'paste') { // Update preview if in paste mode
                         setGeneratedResume(e.target.value);
                     }
                   }}
@@ -364,3 +397,4 @@ export function ResumeBuilder() {
   );
 }
 
+    
