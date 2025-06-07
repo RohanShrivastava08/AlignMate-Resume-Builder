@@ -148,7 +148,13 @@ const generateResumeFlow = ai.defineFlow(
     outputSchema: GenerateResumeOutputSchema,
   },
   async input => {
-    const {text} = await prompt(input);
-    return text!;
+    const response = await prompt(input);
+    const textOutput = response.text;
+    if (textOutput === null || textOutput === undefined) {
+      console.warn('generateResumePrompt returned null or undefined text. Returning empty string.');
+      return ""; 
+    }
+    return textOutput;
   }
 );
+
