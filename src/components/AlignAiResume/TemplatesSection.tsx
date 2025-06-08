@@ -3,9 +3,9 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 
 const templates = [
-  { name: "Modern Professional", imgSrc: "https://placehold.co/300x400.png", hint: "ATS resume" },
-  { name: "Creative Minimalist", imgSrc: "https://placehold.co/300x400.png", hint: "modern CV" },
-  { name: "Classic ATS-Friendly", imgSrc: "https://placehold.co/300x400.png", hint: "classic ATS" },
+  { name: "Professional ATS Format", imgSrc: "https://placehold.co/300x420.png", hint: "ATS resume professional" },
+  { name: "Modern & Clean ATS", imgSrc: "https://placehold.co/300x420.png", hint: "modern ATS clean" },
+  { name: "Simple Effective ATS", imgSrc: "https://placehold.co/300x420.png", hint: "simple ATS effective" },
 ];
 
 export function TemplatesSection() {
@@ -22,7 +22,7 @@ export function TemplatesSection() {
           {templates.map((template) => (
             <Card key={template.name} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group">
               <CardContent className="p-0">
-                <div className="aspect-[3/4] relative w-full overflow-hidden">
+                <div className="aspect-[3/4.2] relative w-full overflow-hidden"> {/* Adjusted aspect ratio for 300x420 */}
                   <Image
                     src={template.imgSrc}
                     alt={template.name}
@@ -46,4 +46,3 @@ export function TemplatesSection() {
     </section>
   );
 }
-
