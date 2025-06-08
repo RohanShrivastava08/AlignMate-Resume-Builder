@@ -24,8 +24,8 @@ export function Footer() {
           <div>
             <h4 className="font-semibold mb-3">Connect</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="#" className="text-muted-foreground hover:text-primary">GitHub</Link></li>
-              <li><Link href="#" className="text-muted-foreground hover:text-primary">LinkedIn</Link></li>
+              <li><Link href="https://github.com/RohanShrivastava08" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">GitHub</Link></li>
+              <li><Link href="https://www.linkedin.com/in/rohan-shrivastava-887a15251/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">LinkedIn</Link></li>
             </ul>
           </div>
         </div>
