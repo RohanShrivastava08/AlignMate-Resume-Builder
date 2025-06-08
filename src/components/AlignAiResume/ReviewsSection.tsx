@@ -7,8 +7,8 @@ const testimonials = [
   {
     name: "Rohan Patel",
     jobTitle: "Software Engineer Fresher",
-    review: "AlignAI helped me create a professional resume that got me multiple interview calls! The ATS optimization is a game-changer.",
-    avatarSrc: "https://placehold.co/100x100.png",
+    review: "AlignMate helped me create a professional resume that got me multiple interview calls! The ATS optimization is a game-changer.",
+    avatarSrc: "https://t3.ftcdn.net/jpg/01/71/24/30/360_F_171243096_npNQnha3ocQkvT1ZRU9Zb6kV90buhk5K.jpg",
     avatarFallback: "RP",
     stars: 5,
     hint: "indian man",
@@ -16,8 +16,8 @@ const testimonials = [
   {
     name: "Priya Singh",
     jobTitle: "Marketing Intern",
-    review: "As a fresher, I was clueless about resume writing. AlignAI made it so easy and the AI suggestions were spot on for the Indian market.",
-    avatarSrc: "https://placehold.co/100x100.png",
+    review: "As a fresher, I was clueless about resume writing. AlignMate made it so easy and the AI suggestions were spot on for the Indian market.",
+    avatarSrc: "https://t3.ftcdn.net/jpg/05/56/62/68/360_F_556626807_UUU8AF9t0myQwwfriHuw76KyWsEGWd55.jpg",
     avatarFallback: "PS",
     stars: 5,
     hint: "indian woman",
@@ -26,7 +26,7 @@ const testimonials = [
     name: "Arjun Kumar",
     jobTitle: "Data Analyst",
     review: "The job description tailoring feature is incredible. My resume felt personalized for each application. Highly recommended for tech roles in India.",
-    avatarSrc: "https://placehold.co/100x100.png",
+    avatarSrc: "https://t3.ftcdn.net/jpg/02/59/07/50/360_F_259075037_SC7O408PFIwPDhTnsBiAq4ASgBDOGF9z.jpg",
     avatarFallback: "AK",
     stars: 4,
     hint: "young man",
@@ -34,7 +34,7 @@ const testimonials = [
   {
     name: "Sneha Reddy",
     jobTitle: "HR Executive",
-    review: "I've seen many resumes, and those built with AlignAI are noticeably clearer and more effective. Great tool for job seekers.",
+    review: "I've seen many resumes, and those built with AlignMate are noticeably clearer and more effective. Great tool for job seekers.",
     avatarSrc: "https://placehold.co/100x100.png",
     avatarFallback: "SR",
     stars: 5,
@@ -43,7 +43,7 @@ const testimonials = [
   {
     name: "Vikram Desai",
     jobTitle: "Recent Graduate",
-    review: "The UI is clean and intuitive. I built my first resume in minutes and felt confident applying for jobs. Thank you AlignAI!",
+    review: "The UI is clean and intuitive. I built my first resume in minutes and felt confident applying for jobs. Thank you AlignMate!",
     avatarSrc: "https://placehold.co/100x100.png",
     avatarFallback: "VD",
     stars: 5,
@@ -58,7 +58,7 @@ export function ReviewsSection() {
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Loved by Jobseekers</h2>
           <p className="text-lg text-muted-foreground">
-            Hear what our users in India have to say about AlignAI Resume Builder.
+            Hear what our users in India have to say about AlignMate Resume Builder.
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

@@ -16,7 +16,7 @@ export function WhyUseSection() {
     {
       icon: <Users className="h-10 w-10 text-primary mb-4" />,
       title: "Ideal for Freshers & Professionals",
-      description: "Whether you're a fresher starting your career journey or an experienced professional aiming higher, AlignAI provides the tools to build a compelling resume."
+      description: "Whether you're a fresher starting your career journey or an experienced professional aiming higher, AlignMate provides the tools to build a compelling resume."
     }
   ];
 
@@ -24,7 +24,7 @@ export function WhyUseSection() {
     <section id="why-use" className="py-16 lg:py-24 bg-secondary/50">
       <div className="container max-w-screen-lg">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose AlignAI Resume?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose AlignMate Resume?</h2>
           <p className="text-lg text-muted-foreground">
             Empowering Indian jobseekers and freshers to achieve their career goals.
           </p>

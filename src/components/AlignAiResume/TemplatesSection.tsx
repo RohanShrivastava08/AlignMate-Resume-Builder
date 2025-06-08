@@ -1,4 +1,3 @@
-
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -40,7 +39,7 @@ export function TemplatesSection() {
           ))}
         </div>
          <p className="text-center mt-8 text-muted-foreground">
-            Note: AlignAI Resume generates text-based resumes optimized for ATS. Visual templates are for illustrative purposes.
+            Note: AlignMate Resume generates text-based resumes optimized for ATS. Visual templates are for illustrative purposes.
           </p>
       </div>
     </section>

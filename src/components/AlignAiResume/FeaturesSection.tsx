@@ -19,7 +19,7 @@ export function FeaturesSection() {
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Features That Set You Apart</h2>
           <p className="text-lg text-muted-foreground">
-            AlignAI Resume Builder is packed with tools to help you land your dream job.
+            AlignMate Resume Builder is packed with tools to help you land your dream job.
           </p>
         </div>
         <Card className="shadow-xl">

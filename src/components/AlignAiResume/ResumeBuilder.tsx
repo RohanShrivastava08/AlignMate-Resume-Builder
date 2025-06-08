@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -203,8 +202,8 @@ export function ResumeBuilder() {
   const { toast } = useToast();
   const [inputMode, setInputMode] = useState<"paste" | "form">("form");
   const [pastedResume, setPastedResume] = useState("");
-  const [jobTitle, setJobTitle] = useState(""); // Initialized to empty
-  const [jobDescription, setJobDescription] = useState(""); // Initialized to empty
+  const [jobTitle, setJobTitle] = useState("");
+  const [jobDescription, setJobDescription] = useState("");
   const [generatedResume, setGeneratedResume] = useState("");
   const [formValuesForPreview, setFormValuesForPreview] = useState<GenerateResumeFormValues | null>(initialResumeData);
   
@@ -222,7 +221,8 @@ export function ResumeBuilder() {
     setPastedResume(""); 
     setGeneratedResume(""); 
     setFormValuesForPreview(initialResumeData);
-    // Job Title and Description are now initialized to empty and not loaded from localStorage
+    setJobTitle(""); 
+    setJobDescription(""); 
   }, []);
 
 
@@ -278,7 +278,7 @@ export function ResumeBuilder() {
     setIsLoadingTailor(true);
     try {
       const result = await tailorResume({ resumeText: generatedResume, jobDescription });
-      setGeneratedResume(result.tailoredResume);
+      setGeneratedResume(result.tailoredResume || ""); // Ensure it's not null
       setReviewData(result.review);
       setIsReviewModalOpen(true);
       toast({ title: "Resume Tailored!", description: "Your resume has been tailored to the job description." });
@@ -330,12 +330,12 @@ export function ResumeBuilder() {
     const blob = new Blob([generatedResume], { type: "text/plain;charset=utf-8" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = "AlignAI_Resume.txt";
+    link.download = "AlignMate_Resume.txt";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(link.href);
-    toast({ title: "Downloaded!", description: "Resume downloaded as AlignAI_Resume.txt." });
+    toast({ title: "Downloaded!", description: "Resume downloaded as AlignMate_Resume.txt." });
   };
   
 
@@ -454,5 +454,3 @@ export function ResumeBuilder() {
     </div>
   );
 }
-
-    

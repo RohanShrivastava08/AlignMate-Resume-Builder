@@ -4,7 +4,7 @@ import { ThemeProvider } from '@/components/AlignAiResume/ThemeProvider';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'AlignAI Resume Builder',
+  title: 'AlignMate Resume Builder',
   description: 'Craft your perfect resume with AI precision',
 };
 
