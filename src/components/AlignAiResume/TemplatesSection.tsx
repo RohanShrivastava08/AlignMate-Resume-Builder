@@ -3,9 +3,9 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 
 const templates = [
-  { name: "Professional ATS Format", imgSrc: "https://placehold.co/300x420.png", hint: "ATS resume professional" },
-  { name: "Modern & Clean ATS", imgSrc: "https://placehold.co/300x420.png", hint: "modern ATS clean" },
-  { name: "Simple Effective ATS", imgSrc: "https://placehold.co/300x420.png", hint: "simple ATS effective" },
+  { name: "Classic Professional ATS", imgSrc: "https://t3.ftcdn.net/jpg/01/71/24/30/360_F_171243096_npNQnha3ocQkvT1ZRU9Zb6kV90buhk5K.jpg", hint: "ATS resume professional" },
+  { name: "Modern Clean ATS", imgSrc: "https://t3.ftcdn.net/jpg/05/56/62/68/360_F_556626807_UUU8AF9t0myQwwfriHuw76KyWsEGWd55.jpg", hint: "modern ATS clean" },
+  { name: "Simple Effective ATS", imgSrc: "https://t3.ftcdn.net/jpg/02/59/07/50/360_F_259075037_SC7O408PFIwPDhTnsBiAq4ASgBDOGF9z.jpg", hint: "simple ATS effective" },
 ];
 
 export function TemplatesSection() {
@@ -22,7 +22,7 @@ export function TemplatesSection() {
           {templates.map((template) => (
             <Card key={template.name} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group">
               <CardContent className="p-0">
-                <div className="aspect-[3/4.2] relative w-full overflow-hidden"> {/* Adjusted aspect ratio for 300x420 */}
+                <div className="aspect-[3/4.2] relative w-full overflow-hidden"> {/* Adjusted aspect ratio for typical resume */}
                   <Image
                     src={template.imgSrc}
                     alt={template.name}
