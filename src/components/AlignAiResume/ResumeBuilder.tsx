@@ -203,8 +203,8 @@ export function ResumeBuilder() {
   const { toast } = useToast();
   const [inputMode, setInputMode] = useState<"paste" | "form">("form");
   const [pastedResume, setPastedResume] = useState("");
-  const [jobTitle, setJobTitle] = useState("");
-  const [jobDescription, setJobDescription] = useState("");
+  const [jobTitle, setJobTitle] = useState(""); // Initialized to empty
+  const [jobDescription, setJobDescription] = useState(""); // Initialized to empty
   const [generatedResume, setGeneratedResume] = useState("");
   const [formValuesForPreview, setFormValuesForPreview] = useState<GenerateResumeFormValues | null>(initialResumeData);
   
@@ -222,33 +222,13 @@ export function ResumeBuilder() {
     setPastedResume(""); 
     setGeneratedResume(""); 
     setFormValuesForPreview(initialResumeData);
-
-    const savedJobTitle = localStorage.getItem("alignai_jobTitle");
-    if (savedJobTitle) setJobTitle(savedJobTitle);
-    const savedJobDescription = localStorage.getItem("alignai_jobDescription");
-    if (savedJobDescription) setJobDescription(savedJobDescription);
+    // Job Title and Description are now initialized to empty and not loaded from localStorage
   }, []);
 
 
-  useEffect(() => {
-    if (jobTitle) { 
-        localStorage.setItem("alignai_jobTitle", jobTitle);
-    } else {
-        localStorage.removeItem("alignai_jobTitle"); 
-    }
-  }, [jobTitle]);
-
-  useEffect(() => {
-    if (jobDescription) { 
-        localStorage.setItem("alignai_jobDescription", jobDescription);
-    } else {
-        localStorage.removeItem("alignai_jobDescription"); 
-    }
-  }, [jobDescription]);
-
   const handleFormUpdate = useCallback((formData: GenerateResumeFormValues) => {
     setFormValuesForPreview(formData);
-  }, []); // Empty dependency array as setFormValuesForPreview is stable
+  }, []); 
 
   useEffect(() => {
     if (inputMode === 'form') {
@@ -256,7 +236,7 @@ export function ResumeBuilder() {
         const plainTextPreview = generatePlainTextPreview(formValuesForPreview);
         setGeneratedResume(plainTextPreview);
       } else {
-        setGeneratedResume(""); // Handle null case or set to initial preview
+        setGeneratedResume(""); 
       }
     } else if (inputMode === 'paste') {
       if (pastedResume.trim() === "") {
@@ -474,3 +454,5 @@ export function ResumeBuilder() {
     </div>
   );
 }
+
+    

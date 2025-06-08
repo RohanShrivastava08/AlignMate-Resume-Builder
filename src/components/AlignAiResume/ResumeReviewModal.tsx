@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { TailorResumeOutput } from "@/ai/flows/tailor-resume";
@@ -19,6 +20,21 @@ interface ResumeReviewModalProps {
   onClose: () => void;
   reviewData: TailorResumeOutput["review"] | null;
 }
+
+const renderListFromString = (text: string | undefined) => {
+  if (!text) return null;
+  return (
+    <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+      {text.split('\n').map((item, index) => {
+        const trimmedItem = item.replace(/^[-*]\s*/, '').trim(); // Remove leading hyphens/asterisks and trim
+        if (trimmedItem) {
+          return <li key={index}>{trimmedItem}</li>;
+        }
+        return null;
+      })}
+    </ul>
+  );
+};
 
 export function ResumeReviewModal({ isOpen, onClose, reviewData }: ResumeReviewModalProps) {
   if (!reviewData) return null;
@@ -52,12 +68,12 @@ export function ResumeReviewModal({ isOpen, onClose, reviewData }: ResumeReviewM
             
             <div>
               <h3 className="font-semibold mb-1 text-lg">Strengths</h3>
-              <p className="text-sm text-muted-foreground">{reviewData.strengths}</p>
+              {renderListFromString(reviewData.strengths)}
             </div>
 
             <div>
               <h3 className="font-semibold mb-1 text-lg">Weaknesses</h3>
-              <p className="text-sm text-muted-foreground">{reviewData.weaknesses}</p>
+              {renderListFromString(reviewData.weaknesses)}
             </div>
 
             <div>
@@ -67,7 +83,7 @@ export function ResumeReviewModal({ isOpen, onClose, reviewData }: ResumeReviewM
             
             <div>
               <h3 className="font-semibold mb-1 text-lg">Suggestions for Improvement</h3>
-              <p className="text-sm text-muted-foreground whitespace-pre-line">{reviewData.suggestions}</p>
+              {renderListFromString(reviewData.suggestions)}
             </div>
           </div>
         </ScrollArea>
@@ -78,3 +94,5 @@ export function ResumeReviewModal({ isOpen, onClose, reviewData }: ResumeReviewM
     </AlertDialog>
   );
 }
+
+    

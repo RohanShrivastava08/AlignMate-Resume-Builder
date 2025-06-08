@@ -71,11 +71,9 @@ const GenerateResumeInputSchema = z.object({
 
 export type GenerateResumeInput = z.infer<typeof GenerateResumeInputSchema>;
 
-// This schema is for the flow's public contract (must be a string)
 const GenerateResumeOutputSchema = z.string().describe('The generated resume in plain text format.');
 export type GenerateResumeOutput = z.infer<typeof GenerateResumeOutputSchema>;
 
-// This schema is for the prompt's internal handling, allowing null
 const NullableGenerateResumeOutputSchema = z.string().nullable().describe('The generated resume in plain text format, possibly null.');
 
 
@@ -87,24 +85,25 @@ const prompt = ai.definePrompt({
   name: 'generateResumePrompt',
   input: {schema: GenerateResumeInputSchema},
   output: {schema: NullableGenerateResumeOutputSchema},
-  prompt: `You are an expert resume writer and career coach. Your task is to transform the following structured information into a professional, grammatically correct, ATS-optimized, and impactful resume in PLAIN TEXT format.
+  prompt: `You are an expert resume writer and career coach. Your task is to transform the following structured information into a professional, grammatically correct, ATS-optimized, concise, and impactful resume in PLAIN TEXT format.
   Do NOT output JSON. The resume should be ready to be copied and pasted into a text editor or a Word document.
 
   Key Objectives:
   - ATS Optimization: Ensure the resume uses clear, standard formatting (headings, bullet points) that Applicant Tracking Systems can easily parse. Use common section headings.
-  - Keyword Enhancement: While generating, subtly incorporate generally relevant keywords for professional roles (e.g., "project management", "data analysis", "customer service", "software development" if applicable based on content).
-  - Impactful Language: Critically review and rewrite user-provided descriptions (especially for work experience and projects). Use strong action verbs (e.g., "Led", "Developed", "Managed", "Implemented", "Achieved"). Quantify achievements whenever possible (e.g., "Increased sales by 15%", "Reduced costs by 10%"). Highlight skills demonstrated. Make it concise and compelling. Avoid passive voice.
+  - Impactful Language & Conciseness: Critically review and rewrite user-provided descriptions (especially for work experience and projects). Use strong action verbs (e.g., "Led", "Developed", "Managed", "Implemented", "Achieved"). Quantify achievements whenever possible (e.g., "Increased sales by 15%", "Reduced costs by 10%"), but keep descriptions brief and to the point. Avoid passive voice and unnecessary jargon.
+  - Keyword Enhancement: Subtly incorporate generally relevant, classy, and ATS-friendly keywords for professional roles. Avoid keyword stuffing.
   - Professional Tone: Maintain a formal and professional tone throughout.
-  - Completeness: Ensure all provided sections are included in the output resume if they contain data.
+  - Completeness & Brevity: Include all provided sections if they contain data, but ensure the overall resume is concise and respects typical length expectations (e.g., one page for less experienced candidates, max two for highly experienced).
+  - Readability: Prioritize clear, scannable content. Use bullet points effectively.
 
   Output Format Guidelines:
   - Start with the Job Profile/Resume Heading if provided, centered or prominently displayed.
   - Then list Personal Details: Name (prominently), followed by Email, Phone, and Location on one line or logically grouped. On the next line, list LinkedIn, GitHub, and Portfolio URLs if provided, clearly labeled (e.g., "LinkedIn: [url]").
   - Follow with a 'SKILLS' section, listing skills clearly (e.g., comma-separated or bulleted list under a 'SKILLS' heading).
-  - Then, 'WORK EXPERIENCE' section. For each experience: Title and Company on one line, Dates (Start - End) on the next. For the Description, transform it into concise, achievement-oriented bullet points (starting with '- ').
-  - Then, 'PROJECTS' section. For each project: Name. Transform the Description into bullet points highlighting skills used and outcomes. List Live Link and GitHub Link if provided, clearly labeled.
+  - Then, 'WORK EXPERIENCE' section. For each experience: Title and Company on one line, Dates (Start - End) on the next. For the Description, transform it into 2-4 concise, achievement-oriented bullet points (starting with '- ').
+  - Then, 'PROJECTS' section. For each project: Name. Transform the Description into 1-3 bullet points highlighting skills used and outcomes. List Live Link and GitHub Link if provided, clearly labeled.
   - Then, 'EDUCATION' section. For each entry: Institution and Degree on one line, Dates (Start - End) on the next.
-  - If Volunteer Experience is provided, include a 'VOLUNTEER EXPERIENCE' section, formatted similarly to Work Experience, focusing on transferable skills and impact.
+  - If Volunteer Experience is provided, include a 'VOLUNTEER EXPERIENCE' section, formatted similarly to Work Experience, focusing on transferable skills and impact with 1-2 bullet points.
   - If Hobbies are provided, include a 'HOBBIES' section, listing them clearly (e.g., comma-separated).
   - Use clear uppercase headings for each section (e.g., "PERSONAL DETAILS", "SKILLS", "WORK EXPERIENCE", "PROJECTS", "EDUCATION", "VOLUNTEER EXPERIENCE", "HOBBIES").
   - Use consistent formatting, bullet points for lists, and ample line breaks for readability.
@@ -188,16 +187,17 @@ const generateResumeFlow = ai.defineFlow(
   {
     name: 'generateResumeFlow',
     inputSchema: GenerateResumeInputSchema,
-    outputSchema: GenerateResumeOutputSchema, // Flow must return a string
+    outputSchema: GenerateResumeOutputSchema, 
   },
   async input => {
-    const response = await prompt(input); // response.text can be string | null
+    const response = await prompt(input); 
     const textOutput = response.text;
     if (textOutput === null || textOutput === undefined) {
       console.warn('generateResumePrompt returned null or undefined text. Returning empty string.');
-      return ""; // Ensure flow returns a string
+      return ""; 
     }
-    return textOutput; // Returns a string
+    return textOutput; 
   }
 );
 
+    
