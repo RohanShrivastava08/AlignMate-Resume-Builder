@@ -1,196 +1,227 @@
+# 🧠 AlignMate Resume Builder – AI-Powered ATS Resume Crafter
 
-# AlignMate Resume Builder 🚀
+<img width="1470" alt="Image" src="https://github.com/user-attachments/assets/f5264748-7b71-4c71-9785-e558dbaca78b" />
 
-AlignMate is an intelligent resume building application designed to help job seekers, especially freshers and professionals in the Indian job market, craft compelling, ATS-friendly resumes with the power of AI. Built with Next.js, React, ShadCN UI, Tailwind CSS, and Genkit for AI capabilities, AlignMate aims to streamline the resume creation process and empower users to present their best professional selves.
+<img width="1470" alt="Image" src="https://github.com/user-attachments/assets/c2ae5fbc-57bf-4f19-b4f1-74ae1a7b73be" />
 
-## ✨ Key Features
+<img width="1470" alt="Image" src="https://github.com/user-attachments/assets/9ce7a0cd-981e-4d8e-be34-2bcc520619eb" />
 
-*   **AI-Powered Resume Generation:**
-    *   Generate a complete resume from structured form input.
-    *   AI actively rewrites descriptions for impact, uses strong action verbs, and quantifies achievements.
-*   **AI Resume Optimization:**
-    *   Paste an existing resume and let AI optimize its content and formatting for ATS compatibility and professionalism.
-*   **AI Resume Tailoring:**
-    *   Tailor your resume specifically to a job description.
-    *   AI analyzes the job description, integrates relevant keywords, and highlights matching skills and experiences.
-*   **ATS Checker & Resume Review:**
-    *   Get an in-depth AI review of your resume against a job description.
-    *   Includes an estimated ATS score, keyword match rate, readability assessment, and actionable suggestions for improvement (strengths & weaknesses).
-*   **Structured Resume Form:**
-    *   Intuitive form-based input for all essential resume sections:
-        *   Personal Details
-        *   Job Profile/Resume Heading
-        *   Skills
-        *   Work Experience
-        *   Projects
-        *   Education
-        *   Volunteer Experience (Optional)
-        *   Hobbies (Optional)
-*   **Live Preview:**
-    *   See your resume update in real-time as you fill the form or as AI makes modifications.
-*   **Easy Export:**
-    *   Download your generated resume as a `.txt` file, ideal for copy-pasting into online applications and ensuring maximum ATS compatibility.
-*   **Modern UI/UX:**
-    *   Clean, responsive design built with ShadCN UI components and Tailwind CSS.
-    *   Includes Dark/Light mode theme toggle.
-*   **Landing Page:**
-    *   Informative sections detailing features, templates (illustrative), why use AlignMate, user reviews, and FAQs.
 
-## 🛠️ Technology Stack
+- An intelligent, AI-assisted resume builder built for Indian job seekers and global professionals alike.
 
-*   **Frontend:**
-    *   Next.js (App Router)
-    *   React
-    *   TypeScript
-*   **UI Components:**
-    *   ShadCN UI
-*   **Styling:**
-    *   Tailwind CSS
-    *   CSS Variables for Theming
-*   **AI Integration:**
-    *   Genkit (with Google AI - Gemini models)
-*   **State Management:**
-    *   React Hooks (useState, useEffect, useCallback)
-    *   React Hook Form (for resume form management)
-    *   Zod (for schema validation)
-*   **Linting/Formatting:**
-    *   ESLint, Prettier (implicitly via Next.js setup)
+- Create, optimize, and tailor job-winning, ATS-friendly resumes with real-time previews and Genkit AI workflows.
 
-## ⚙️ Getting Started
+- Built using Firebase Studio, Next.js (App Router), React, TypeScript, Tailwind CSS, ShadCN UI, and integrated with Genkit (Google Gemini).
 
-### Prerequisites
 
-*   Node.js (version 18.x or higher recommended)
-*   npm or yarn
+## 📋 Table of Contents
+- Introduction
+- Features
+- Project Implementation Process
+- File Structure
+- Technology Stack
+- Installation
+- Usage
+- Screenshots
+- Contributing
+- License
+- Contact
 
-### Setup & Running Locally
+## 📘 Introduction
 
-1.  **Clone the repository (if applicable):**
-    ```bash
-    git clone <repository-url>
-    cd <project-directory>
-    ```
+- AlignMate is a futuristic resume-building platform that empowers users to generate powerful, tailored, and optimized resumes for any job role.
+- Whether you're a fresher or a seasoned professional, AlignMate brings AI into your job hunt—crafting ATS-compatible, professional resumes effortlessly.
 
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    # or
-    yarn install
-    ```
 
-3.  **Set up Environment Variables:**
-    *   Create a `.env.local` file in the root of your project.
-    *   You'll need to add your Google AI API key for Genkit to work:
-        ```env
-        GOOGLE_API_KEY=YOUR_GOOGLE_AI_API_KEY
-        ```
-    *   You can obtain a Google AI API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+## ✨ Features
 
-4.  **Run the Genkit development server (for AI flows):**
-    In a separate terminal, run:
-    ```bash
-    npm run genkit:dev
-    # or for auto-reloading on changes
-    npm run genkit:watch
-    ```
-    This starts the Genkit development server, typically on port 4000, making the AI flows available.
+    🧠 AI Resume Generation
+→ Automatically builds a resume from structured form input using action verbs and quantifiable results.
 
-5.  **Run the Next.js development server:**
-    In another terminal, run:
-    ```bash
-    npm run dev
-    ```
-    This will start the Next.js application, usually on `http://localhost:9002`.
+    🧰 AI Resume Optimization
+→ Paste your current resume and let the AI enhance content, formatting, and keyword alignment for better ATS performance.
 
-6.  Open your browser and navigate to `http://localhost:9002` to see the application.
+    🎯 AI Resume Tailoring
+→ Upload a job description and let AlignMate customize your resume to match it—skills, keywords, tone, and all.
 
-### Building for Production
+    📊 ATS Checker + AI Review
+→ Get an estimated ATS score, keyword match %, readability analysis, strengths, weaknesses, and improvement tips.
+
+    📝 Structured Resume Form
+→ Intuitive form to input personal details, work experience, skills, projects, education, and optional sections like hobbies.
+
+    🖼 Live Preview
+→ See your resume update in real-time with every change or AI enhancement.
+
+    ⬇️ Plain Text Export
+→ Download as .txt to easily paste into job portals or word processors—ensuring 100% ATS compatibility.
+
+    🌘 Modern UI/UX
+→ Responsive design built with Tailwind and ShadCN components. Fully supports Light/Dark mode.
+
+    📢 Landing Page
+→ Elegant landing page featuring features, templates, testimonials, and FAQs.
+
+## 🛠 Project Implementation Process
+
+#### 1. Structure & Form UX
+- Componentized form sections for Resume inputs (Job Title, Skills, Projects, etc.)
+- Responsive and minimal layout using Tailwind + ShadCN UI
+
+#### 2. AI Integration with Genkit
+- Google’s Gemini models power Genkit flows for resume generation, tailoring, and review
+- Multiple flows structured for reusability and performance
+
+#### 3. Resume Output
+- Text-only resumes for ATS accuracy
+- Cleanly formatted with bullet points and consistent tone
+
+
+## 📁 File Structure
 
 ```bash
-npm run build
-npm run start
+alignmate-resume-builder/
+├── src/
+│   ├── app/                 # Next.js App Router (pages, layouts, globals)
+│   ├── components/
+│   │   ├── AlignAiResume/  # Resume builder, layout sections, feature blocks
+│   │   └── ui/             # ShadCN components
+│   ├── ai/                 # Genkit AI logic (flows, config)
+│   ├── lib/                # Utilities and Zod schema validation
+│   ├── hooks/              # Custom hooks
+├── public/                 # Static assets
+├── .env.local              # Environment variables (Google AI Key)
+├── next.config.ts          # Next.js config
+├── tailwind.config.ts      # Tailwind theme
+└── README.md
+
 ```
 
-## 📂 Project Structure
+## 💻 Technology Stack
 
-Here's a brief overview of the key directories:
+Category	Tech Used
 
-*   `src/app/`: Contains the Next.js App Router pages and layouts.
-    *   `page.tsx`: The main entry point for the homepage.
-    *   `layout.tsx`: The root layout for the application.
-    *   `globals.css`: Global styles and Tailwind CSS theme configuration.
-*   `src/components/`: Shared React components.
-    *   `AlignAiResume/`: Components specific to the AlignMate application (Header, Footer, ResumeBuilder, feature sections, etc.).
-    *   `ui/`: ShadCN UI components.
-*   `src/ai/`: Genkit AI integration.
-    *   `genkit.ts`: Genkit initialization and configuration.
-    *   `flows/`: Contains the Genkit flows for different AI features (e.g., `generate-resume.ts`, `optimize-resume.ts`, `tailor-resume.ts`).
-    *   `dev.ts`: Development server entry point for Genkit flows.
-*   `src/lib/`: Utility functions and libraries.
-    *   `utils.ts`: General utility functions (like `cn` for class names).
-    *   `zod-schemas.ts`: Zod schemas for form validation and AI flow inputs/outputs.
-*   `src/hooks/`: Custom React hooks (e.g., `use-toast.ts`, `use-mobile.ts`).
-*   `public/`: Static assets (though images in this project are mostly placeholders or external).
-*   `next.config.ts`: Next.js configuration file.
-*   `tailwind.config.ts`: Tailwind CSS configuration.
-*   `components.json`: ShadCN UI configuration.
+🧠 AI Engine	Genkit (Google Gemini via Google AI Studio)
 
-## 🤖 AI Features Explained
+⚛️ Framework	Next.js (App Router), React
 
-AlignMate leverages Genkit to interact with Google's Gemini models for its AI capabilities.
+💅 Styling	Tailwind CSS, ShadCN UI, CSS Variables
 
-1.  **Generate Resume (`generate-resume.ts`)**
-    *   **Input:** Structured data from the resume form (`GenerateResumeInput`).
-    *   **Process:** The AI acts as an expert resume writer. It takes the user's raw data, refines the language, uses action verbs, quantifies achievements where appropriate, ensures professional tone, incorporates general ATS-friendly keywords, and formats it into a clean, plain text resume.
-    *   **Output:** A string containing the generated plain text resume (`GenerateResumeOutput`).
+🔠 Language	TypeScript
 
-2.  **Optimize Resume (`optimize-resume.ts`)**
-    *   **Input:** Raw text of an existing resume (`OptimizeResumeInput`).
-    *   **Process:** The AI reformats and optimizes the provided text, focusing on ATS-friendly structure, professional formatting, action verbs, and relevant keywords.
-    *   **Output:** An object containing the optimized resume text (`OptimizeResumeOutput`).
+✅ Validation	Zod, React Hook Form
 
-3.  **Tailor Resume & ATS Checker (`tailor-resume.ts`)**
-    *   **Input:** The current resume text and a job description (`TailorResumeInput`).
-    *   **Process:**
-        *   The AI deeply analyzes the job description to extract key skills, technologies, responsibilities, and company culture cues.
-        *   It then rewrites/reorganizes the resume to highlight alignment with these specific requirements, integrating keywords naturally and concisely.
-        *   Simultaneously, it generates a review object.
-    *   **Output:** An object (`TailorResumeOutput`) containing:
-        *   `tailoredResume`: The new, job-description-specific plain text resume.
-        *   `review`: An object with:
-            *   `strengths`: Strengths of the resume against the job description (bullet points).
-            *   `weaknesses`: Weaknesses/gaps (bullet points).
-            *   `atsScore`: Estimated ATS score (0-100%).
-            *   `readability`: Brief readability assessment.
-            *   `keywordMatchRate`: Estimated keyword match rate (0-100%).
-            *   `suggestions`: Actionable improvement suggestions (bullet points).
+🧪 State Management	React Hooks
 
-## 🎨 UI & Styling
+🧹 Linting/Formatting	ESLint, Prettier
 
-*   **ShadCN UI:** Provides a set of beautifully designed and accessible components that can be easily customized.
-*   **Tailwind CSS:** Used for utility-first styling, allowing for rapid UI development and easy maintenance.
-*   **Theming:** Dark and Light modes are supported through CSS variables defined in `src/app/globals.css` and managed by `next-themes`.
+🚀 Deployment	Vercel (recommended)
 
-## 🚀 Future Enhancements (Ideas)
+## 🛠 Installation
 
-*   Direct PDF/DOCX export options.
-*   User accounts for saving and managing multiple resumes.
-*   More sophisticated template selection (beyond illustrative).
-*   Integration with job boards for easier application.
-*   Advanced AI suggestions for specific industries or roles.
-*   Cover letter generation assistant.
+Follow these steps to set up and run the Techny project locally:
+
+#### 1. Clone the repository
+```bash
+git clone https://github.com/YourUsername/alignmate-resume-builder.git
+cd alignmate-resume-builder
+
+```
+
+#### 2. Install dependencies
+
+```bash
+npm install
+# or
+yarn install
+
+```
+
+#### 3. Set Up Environment Variables
+
+- Create a .env.local file in the root:
+
+```bash
+GOOGLE_API_KEY=your_google_ai_api_key
+```
+
+Get your API key at: Google AI Studio
+
+#### 4. Run Genkit (AI server)
+
+```bash
+npm run genkit:dev
+# or for hot reload
+npm run genkit:watch
+```
+
+### 5. Run the app
+
+```bash
+npm run dev
+```
+Visit: http://localhost:9002
+
+## 🚀 Usage
+- Fill in resume form sections step by step
+- Use AI to generate or tailor your resume
+- View real-time preview instantly
+- Download plain text for ATS-optimized submissions
+- Switch between dark and light modes
+
+🤖 AI Capabilities
+
+Feature	AI Flow	Input	Output
+
+Resume Generator	generate-resume.ts	 Form data (GenerateResumeInput)	Clean, ATS-ready plain text resume
+
+Resume Optimizer	optimize-resume.ts	Existing resume text	 Polished and reformatted text
+
+Tailor & ATS	tailor-resume.ts	Resume text + Job  Description	Tailored resume + review breakdown
+
+
+
+## 📸 Screenshots
+
+<img width="1470" alt="Image" src="https://github.com/user-attachments/assets/f5264748-7b71-4c71-9785-e558dbaca78b" />
+
+<img width="1470" alt="Image" src="https://github.com/user-attachments/assets/c2ae5fbc-57bf-4f19-b4f1-74ae1a7b73be" />
+
+<img width="1470" alt="Image" src="https://github.com/user-attachments/assets/9ce7a0cd-981e-4d8e-be34-2bcc520619eb" />
+
+<img width="1470" alt="Image" src="https://github.com/user-attachments/assets/fd233ed4-d045-439a-bf7f-766effae344a" />
+
+<img width="1470" alt="Image" src="https://github.com/user-attachments/assets/8c901b93-4396-4368-bd30-cccde9c4a4ee" />
+
+<img width="1470" alt="Image" src="https://github.com/user-attachments/assets/5c910e29-4142-4869-aa9f-65152dbe4135" />
 
 ## 🤝 Contributing
+We welcome community contributions! Follow the steps below to contribute:
 
-Contributions are welcome! If you have ideas for improvements or want to fix a bug, please feel free to:
+#### Fork the repository
+- Create a new branch:
+```bash
+git checkout -b feature/YourFeature
+```
 
-1.  Fork the repository.
-2.  Create a new branch (`git checkout -b feature/your-feature-name`).
-3.  Make your changes.
-4.  Commit your changes (`git commit -m 'Add some feature'`).
-5.  Push to the branch (`git push origin feature/your-feature-name`).
-6.  Open a Pull Request.
+- Commit your changes:
+```bash
+git commit -m 'Add your feature'
+```
 
----
+- Push to the branch:
+```bash
+git push origin feature/YourFeature
+```
 
-Thank you for checking out AlignMate Resume Builder! We hope it helps you align your career path with success.
+- Open a pull request with detailed explanations of your changes.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 📞 Contact
+For any questions or suggestions, feel free to reach out:
+
+- Email: rohansh0808@gmail.com
+- GitHub: Rohansh0808
