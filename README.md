@@ -1,16 +1,16 @@
 # 🧠 AlignMate Resume Builder – AI-Powered ATS Resume Crafter
 
-- An intelligent, AI-assisted resume builder built for Indian job seekers and global professionals alike.
-
-- Create, optimize, and tailor job-winning, ATS-friendly resumes with real-time previews and Genkit AI workflows.
-
-- Built using Firebase Studio, Next.js (App Router), React, TypeScript, Tailwind CSS, ShadCN UI, and integrated with Genkit (Google Gemini).
-
 <img width="1470" alt="Image" src="https://github.com/user-attachments/assets/f5264748-7b71-4c71-9785-e558dbaca78b" />
 
 <img width="1470" alt="Image" src="https://github.com/user-attachments/assets/c2ae5fbc-57bf-4f19-b4f1-74ae1a7b73be" />
 
 <img width="1470" alt="Image" src="https://github.com/user-attachments/assets/9ce7a0cd-981e-4d8e-be34-2bcc520619eb" />
+
+- An intelligent, AI-assisted resume builder built for Indian job seekers and global professionals alike.
+
+- Create, optimize, and tailor job-winning, ATS-friendly resumes with real-time previews and Genkit AI workflows.
+
+- Built using Firebase Studio, Next.js (App Router), React, TypeScript, Tailwind CSS, ShadCN UI, and integrated with Genkit (Google Gemini).
 
 
 ## 📋 Table of Contents
